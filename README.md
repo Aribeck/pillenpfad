@@ -1,5 +1,7 @@
 # 💊 PillenPfad
 
+**▶ Live ausprobieren: https://aribeck.github.io/pillenpfad/**
+
 Eine kleine Lern-App, mit der Pflegekräfte die wichtigsten Medikamente lernen – in kurzen Lektionen, mit Quiz, Punkten, Tages-Serie und dem Maskottchen **Kapsi**.
 
 > ⚠️ **Hinweis:** PillenPfad ist eine Lernhilfe. Die Inhalte sind vereinfacht und ersetzen keine Fachinformation, ärztliche Anordnung oder Rücksprache mit der Apotheke. Dosierungen sind bewusst nicht enthalten.
