@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E7C7B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>PillenPfad – Medikamente lernen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===== PillenPfad · Stil „Klinik-Frisch“ ===== */
+:root{
+  --bg:#FAF7F2;--surface:#FFFFFF;--ink:#16302F;--muted:#6B7F7E;--faint:#A9B6B4;--line:#E9E3DA;--line2:#F1ECE4;
+  --petrol:#0E7C7B;--petrol-d:#0A5F5E;--petrol-s:#E1F1EF;
+  --coral:#FF6B5B;--coral-d:#E5513F;--coral-s:#FFE8E4;
+  --sand:#E9A93A;--sand-s:#FCF1DC;
+  --r:20px;--r-sm:14px;
+  --sh:0 1px 2px rgba(22,48,47,.05),0 8px 24px rgba(22,48,47,.06);
+  --sh-lg:0 2px 6px rgba(22,48,47,.06),0 18px 40px rgba(22,48,47,.12);
+  --safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:500;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+b,strong{font-weight:800}
+svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+svg.i.f{fill:currentColor;stroke:none}
+.app{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:calc(92px + var(--safe-b))}
+
+/* Kopfzeile */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(250,247,242,.88);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);padding:calc(10px + var(--safe-t)) 16px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid transparent}
+.topbar.scrolled{border-bottom-color:var(--line)}
+.brand{display:flex;align-items:center;gap:6px;font-weight:800;font-size:19px;letter-spacing:-.4px;margin-right:auto;color:var(--ink)}
+.brand em{font-style:normal;color:var(--petrol)}
+.chip-stat{display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 11px;border-radius:999px;background:var(--surface);box-shadow:0 0 0 1px var(--line);font-weight:800;font-size:14px}
+.chip-stat svg.i{width:17px;height:17px}
+.chip-stat.fire{color:var(--coral)} .chip-stat.fire.off{color:var(--faint)}
+.chip-stat.xp{color:var(--sand)} .chip-stat.xp span,.chip-stat.fire span,.chip-stat.heart span{color:var(--ink)}
+.chip-stat.heart{color:var(--coral)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:52px;padding:0 22px;border-radius:999px;font-weight:800;font-size:16px;background:var(--petrol);color:#fff;box-shadow:0 6px 18px rgba(14,124,123,.28);transition:transform .08s,box-shadow .15s,background .15s;user-select:none}
+.btn:active{transform:scale(.98)}
+.btn.block{width:100%}
+.btn.coral{background:var(--coral);box-shadow:0 6px 18px rgba(255,107,91,.32)}
+.btn.soft{background:var(--petrol-s);color:var(--petrol-d);box-shadow:none}
+.btn.ghost{background:var(--surface);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.btn.danger{background:var(--surface);color:var(--coral-d);box-shadow:0 0 0 1px var(--line)}
+.btn.small{height:40px;padding:0 16px;font-size:14px}
+.btn[disabled]{background:#E6E1D9;color:#9AA7A5;box-shadow:none;cursor:default;transform:none}
+
+/* Startseite */
+.hello{padding:8px 20px 4px}
+.hello h1{font-size:26px;font-weight:800;letter-spacing:-.6px;margin:6px 0 2px}
+.hello p{margin:0;color:var(--muted)}
+.goal{margin:14px 16px 6px;background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);padding:16px;display:flex;gap:14px;align-items:center}
+.ring{position:relative;flex:none;display:grid;place-items:center}
+.ring svg{transform:rotate(-90deg)}
+.ring .rc{position:absolute;inset:0;display:grid;place-items:center}
+.goal .txt{flex:1;min-width:0}
+.goal h3{margin:0 0 2px;font-size:16px;font-weight:800}
+.goal small{color:var(--muted);font-size:13px}
+
+.unit{margin:22px 16px 0}
+.unit-card{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);padding:14px 16px;position:relative;overflow:hidden}
+.unit-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--u)}
+.uicon{width:48px;height:48px;border-radius:14px;background:var(--us);display:grid;place-items:center;font-size:24px;flex:none}
+.unit-card .ut{flex:1;min-width:0}
+.unit-card .k{font-size:12px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--u)}
+.unit-card h2{margin:1px 0 1px;font-size:19px;font-weight:800;letter-spacing:-.3px}
+.unit-card p{margin:0;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.uprog{font-size:12px;font-weight:800;color:var(--muted);text-align:center;flex:none}
+
+.steps{list-style:none;margin:0;padding:8px 0 0 0;position:relative}
+.steps::before{content:"";position:absolute;left:37px;top:18px;bottom:30px;width:2px;background:repeating-linear-gradient(to bottom,var(--line) 0 6px,transparent 6px 11px)}
+.step{position:relative}
+.srow{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:10px 12px 10px 16px;border-radius:16px;transition:background .15s}
+.srow:active{background:rgba(22,48,47,.04)}
+.dot{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:16px;flex:none;position:relative;z-index:1;background:var(--surface);color:var(--faint);box-shadow:0 0 0 2px var(--line)}
+.dot svg.i{width:20px;height:20px}
+.step.open .dot{color:var(--u);box-shadow:0 0 0 2px var(--u)}
+.step.done .dot{background:var(--u);color:#fff;box-shadow:none}
+.step.current .dot{background:var(--u);color:#fff;box-shadow:0 0 0 5px var(--us)}
+.step.current .dot::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid var(--u);opacity:.35;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(.92);opacity:.4}50%{transform:scale(1.06);opacity:0}}
+.st{flex:1;min-width:0}
+.st b{display:block;font-size:15.5px;font-weight:800}
+.st small{display:block;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step.locked .st b{color:var(--faint)} .step.locked .st small{color:#C3CCCA}
+.sact{flex:none;font-size:13px;font-weight:800;color:var(--muted);display:flex;align-items:center;gap:4px}
+.step.current .sact{background:var(--coral);color:#fff;padding:7px 12px;border-radius:999px;box-shadow:0 4px 12px rgba(255,107,91,.3)}
+.step.done .sact{color:var(--u)}
+.sdetail{margin:2px 12px 10px 74px;background:var(--surface);border-radius:16px;box-shadow:var(--sh);padding:14px;animation:drop .18s ease-out}
+.sdetail p{margin:0 0 12px;color:var(--muted);font-size:14px;line-height:1.45}
+.sdetail .pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.sdetail .pills span{background:var(--us);color:var(--ink);font-size:13px;font-weight:700;padding:5px 10px;border-radius:999px}
+@keyframes drop{from{opacity:0;transform:translateY(-6px)}}
+
+/* Untere Navigation */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:8px 8px calc(8px + var(--safe-b))}
+.nav .in{max-width:560px;margin:0 auto;display:flex;justify-content:space-around}
+.nav button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 20px;font-size:12px;font-weight:700;color:var(--faint);position:relative}
+.nav button svg.i{width:24px;height:24px}
+.nav button.on{color:var(--petrol)}
+.nav button.on::before{content:"";position:absolute;top:-9px;width:26px;height:3px;border-radius:0 0 3px 3px;background:var(--petrol)}
+
+/* Lexikon */
+.page{padding:12px 16px}
+.page h1{font-size:26px;font-weight:800;letter-spacing:-.6px;margin:6px 0 14px}
+.search{width:100%;font:inherit;font-weight:600;font-size:16px;height:50px;padding:0 16px 0 46px;border:0;border-radius:999px;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B7F7E' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E") 16px 50% no-repeat;box-shadow:0 0 0 1px var(--line);outline:none;color:var(--ink)}
+.search:focus{box-shadow:0 0 0 2px var(--petrol)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:14px 0 4px;scrollbar-width:none;margin:0 -16px;padding-left:16px;padding-right:16px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;height:36px;padding:0 14px;border-radius:999px;box-shadow:0 0 0 1px var(--line);font-size:13px;font-weight:700;color:var(--muted);background:var(--surface)}
+.chip.on{color:#fff;background:var(--c,var(--petrol));box-shadow:none}
+.lex-group h3{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:20px 4px 8px;display:flex;align-items:center;gap:8px;font-weight:800}
+.lex-group h3 .d{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.lex-list{background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.drug-row{width:100%;text-align:left;display:flex;align-items:center;gap:12px;padding:13px 14px;border-top:1px solid var(--line2)}
+.drug-row:first-child{border-top:0}
+.drug-row:active{background:var(--line2)}
+.drug-row .t{flex:1;min-width:0}
+.drug-row .t div{font-weight:800;font-size:15.5px}
+.drug-row .t small{color:var(--muted);font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drug-row .ok{color:var(--sand)}
+.drug-row .chev{color:var(--faint)}
+.empty{color:var(--muted);text-align:center;padding:30px 10px}
+
+/* Karteikarte */
+.card{background:var(--surface);border-radius:22px;box-shadow:var(--sh);overflow:hidden}
+.card .hd{padding:20px 20px 16px;background:linear-gradient(160deg,var(--cs),transparent 80%);position:relative}
+.card .lbl{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--c)}
+.card .lbl i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.card h2{margin:6px 0 2px;font-size:30px;font-weight:800;line-height:1.1;letter-spacing:-.8px;word-break:break-word}
+.card .brandn{color:var(--muted);font-size:14px}
+.card .grp{display:inline-block;margin-top:12px;background:var(--surface);color:var(--c);padding:6px 12px;border-radius:999px;font-size:13px;font-weight:800;box-shadow:0 0 0 1.5px var(--c)}
+.sec{padding:14px 20px;border-top:1px solid var(--line2)}
+.sec h5{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);font-weight:800;display:flex;align-items:center;gap:7px}
+.sec h5 svg.i{width:16px;height:16px}
+.sec ul{margin:0;padding:0;list-style:none}
+.sec li{position:relative;padding-left:16px;margin:5px 0;line-height:1.4;font-size:15px;font-weight:600}
+.sec li::before{content:"";position:absolute;left:2px;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--faint)}
+.sec p{margin:0;line-height:1.45;font-size:15px;font-weight:600}
+.sec.warn h5{color:var(--coral-d)} .sec.warn li::before{background:var(--coral)}
+.sec.care{background:var(--petrol-s)} .sec.care h5{color:var(--petrol-d)} .sec.care li::before{background:var(--petrol)}
+
+/* Dialoge */
+.overlay{position:fixed;inset:0;background:rgba(22,48,47,.35);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:60;display:flex;align-items:flex-end;justify-content:center;animation:fade .15s}
+.overlay.center{align-items:center;padding:20px}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:90vh;overflow:auto;border-radius:26px 26px 0 0;padding:10px 16px calc(18px + var(--safe-b));animation:up .25s cubic-bezier(.2,.9,.3,1)}
+.sheet .grab{width:40px;height:5px;border-radius:5px;background:var(--line);margin:0 auto 12px}
+.dialog{background:var(--surface);width:100%;max-width:380px;border-radius:26px;padding:24px 22px 20px;text-align:center;box-shadow:var(--sh-lg);animation:popc .2s ease-out}
+.dialog h3{margin:8px 0 6px;font-size:21px;font-weight:800;letter-spacing:-.3px}
+.dialog p{margin:0 0 20px;color:var(--muted);line-height:1.5}
+.dialog .row{display:flex;flex-direction:column;gap:10px}
+.hearts-big{display:flex;justify-content:center;gap:6px;color:var(--coral);margin:4px 0}
+.hearts-big svg.i{width:30px;height:30px}
+.hearts-big .e{color:var(--line)}
+@keyframes fade{from{opacity:0}}
+@keyframes up{from{transform:translateY(40px);opacity:.4}}
+@keyframes popc{from{transform:scale(.94);opacity:0}}
+
+/* Lektion */
+.lesson{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column}
+.lesson .lt{max-width:560px;width:100%;margin:0 auto;padding:calc(14px + var(--safe-t)) 16px 6px;display:flex;align-items:center;gap:14px}
+.lesson .x{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--muted);background:var(--surface);box-shadow:0 0 0 1px var(--line)}
+.pbar{flex:1;height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.pbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--petrol),#16A39F);transition:width .45s cubic-bezier(.2,.9,.3,1)}
+.lesson .lbody{flex:1;overflow:auto;max-width:560px;width:100%;margin:0 auto;padding:14px 16px 24px}
+.lesson .lfoot{padding:12px 16px calc(16px + var(--safe-b))}
+.lesson .lfoot .in{max-width:560px;margin:0 auto}
+.qkind{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--petrol);background:var(--petrol-s);padding:6px 11px;border-radius:999px;margin:4px 0 14px}
+.qhead{display:flex;gap:10px;align-items:flex-end;margin-bottom:18px}
+.qhead .q{flex:1;background:var(--surface);border-radius:20px 20px 20px 6px;box-shadow:var(--sh);padding:16px 18px;font-size:19px;font-weight:700;line-height:1.38;letter-spacing:-.2px}
+.qhead .q b{color:var(--petrol-d)}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{text-align:left;width:100%;padding:14px 16px;border-radius:16px;background:var(--surface);box-shadow:0 0 0 1.5px var(--line);font-size:15.5px;font-weight:700;line-height:1.35;display:flex;gap:12px;align-items:center;transition:box-shadow .12s,background .12s}
+.opt .k{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800;color:var(--muted);background:var(--line2)}
+.opt:active{transform:scale(.99)}
+.opt.sel{box-shadow:0 0 0 2px var(--petrol);background:#F4FBFA}
+.opt.sel .k{background:var(--petrol);color:#fff}
+.opt.right{box-shadow:0 0 0 2px var(--petrol);background:var(--petrol-s);color:var(--petrol-d)}
+.opt.right .k{background:var(--petrol);color:#fff}
+.opt.wrong{box-shadow:0 0 0 2px var(--coral);background:var(--coral-s);color:var(--coral-d)}
+.opt.wrong .k{background:var(--coral);color:#fff}
+.opt.dim{opacity:.55}
+.opt[disabled]{cursor:default}
+.tfrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tfrow .opt{justify-content:center;flex-direction:column;gap:8px;padding:20px 10px;font-size:16px}
+.tfrow .opt svg.i{width:26px;height:26px}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match .col{display:flex;flex-direction:column;gap:10px}
+.mt{min-height:64px;padding:10px 12px;border-radius:14px;background:var(--surface);box-shadow:0 0 0 1.5px var(--line);font-weight:700;font-size:14px;line-height:1.25;text-align:center;transition:all .15s}
+.mt.sel{box-shadow:0 0 0 2px var(--petrol);background:#F4FBFA;color:var(--petrol-d)}
+.mt.gone{background:var(--petrol-s);box-shadow:none;color:var(--petrol);opacity:.45;pointer-events:none}
+.mt.bad{animation:shake .35s;box-shadow:0 0 0 2px var(--coral);background:var(--coral-s);color:var(--coral-d)}
+@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.qtitle{font-size:20px;font-weight:800;letter-spacing:-.3px;margin:0 0 16px}
+.newtag{display:inline-flex;align-items:center;gap:6px;background:var(--sand-s);color:#A7701A;font-size:12px;font-weight:800;letter-spacing:.9px;padding:6px 11px;border-radius:999px;text-transform:uppercase;margin:4px 0 12px}
+.feedback{background:var(--surface);border-radius:26px 26px 0 0;box-shadow:0 -10px 30px rgba(22,48,47,.12);padding:18px 16px calc(16px + var(--safe-b));animation:up .22s ease-out;position:relative}
+.feedback .in{max-width:560px;margin:0 auto}
+.feedback .fh{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.feedback .badge{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;flex:none}
+.feedback.ok .badge{background:var(--petrol)} .feedback.bad .badge{background:var(--coral)}
+.feedback h3{margin:0;font-size:20px;font-weight:800}
+.feedback.ok h3{color:var(--petrol-d)} .feedback.bad h3{color:var(--coral-d)}
+.feedback p{margin:0 0 14px 46px;line-height:1.45;font-size:14.5px;color:var(--muted);font-weight:600}
+.feedback p b{color:var(--ink)}
+
+/* Ergebnis */
+.result{text-align:center;padding:30px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%}
+.result h2{font-size:28px;font-weight:800;letter-spacing:-.6px;margin:14px 0 6px}
+.result p{color:var(--muted);margin:0 0 24px;font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:400px;margin-bottom:28px}
+.tile{background:var(--surface);border-radius:18px;box-shadow:var(--sh);padding:14px 6px}
+.tile .ti{width:34px;height:34px;border-radius:50%;margin:0 auto 6px;display:grid;place-items:center;color:var(--tc);background:var(--tb)}
+.tile .ti svg.i{width:18px;height:18px}
+.tile .tv{font-size:20px;font-weight:800}
+.tile .th{font-size:12px;color:var(--muted);font-weight:700}
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:70}
+.confetti i{position:absolute;top:-14px;width:8px;height:14px;border-radius:4px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+
+/* Profil */
+.hero{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);padding:16px}
+.hero h1{margin:0;font-size:22px}
+.hero p{margin:2px 0 0;color:var(--muted)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 14px}
+.sbox{background:var(--surface);border-radius:18px;box-shadow:var(--sh);padding:14px;display:flex;gap:12px;align-items:center}
+.sbox .ib{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;color:var(--tc);background:var(--tb)}
+.sbox b{display:block;font-size:19px}
+.sbox small{color:var(--muted);font-weight:600;font-size:12.5px}
+.setting{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border-radius:18px;box-shadow:var(--sh);padding:14px 16px;margin-bottom:10px;font-weight:700}
+.setting span{display:flex;align-items:center;gap:10px}
+.switch{width:50px;height:30px;border-radius:99px;background:var(--line);position:relative;transition:background .15s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.15);transition:left .15s}
+.switch.on{background:var(--petrol)}
+.switch.on::after{left:23px}
+.note{background:var(--petrol-s);border-radius:18px;padding:14px 16px;color:var(--petrol-d);font-size:13.5px;line-height:1.5;margin:14px 0}
+.syncline{font-size:13px;color:var(--muted);font-weight:600;margin:6px 4px 0;display:flex;align-items:center;gap:6px}
+.syncline .d{width:8px;height:8px;border-radius:50%;background:var(--faint)}
+.syncline .d.on{background:var(--petrol)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+</style>
+</head>
+<body>
+<div id="app" class="app"></div>
+<script>
+// Inhalte: kurze, pflegerelevante Stichpunkte. Keine Dosierungen.
+// Felder: n=Wirkstoff, b=Handelsname (Beispiel), g=Gruppe, u=Indikationen, w=Wirkung,
+// nw=Nebenwirkungen, p=Pflegehinweise, uq/nq/pq=Kernaussage für Quizfragen, t=zusätzliche Themen-Tags
+const GROUP_SUFFIX = {
+  "COX-2-Hemmer (Coxib)": ["coxib"],
+  "Faktor-Xa-Hemmer (DOAK)": ["xaban"],
+  "ACE-Hemmer": ["pril"],
+  "Sartan (AT1-Blocker)": ["sartan"],
+  "Betablocker": ["olol"],
+  "Calciumkanalblocker": ["dipin"],
+  "Statin": ["statin"],
+  "DPP-4-Hemmer (Gliptin)": ["gliptin"],
+  "SGLT-2-Hemmer (Gliflozin)": ["gliflozin"],
+  "Protonenpumpenhemmer (PPI)": ["prazol"],
+  "Antiemetikum (5-HT3-Blocker)": ["setron"],
+  "Fluorchinolon (Gyrasehemmer)": ["floxacin"],
+  "Benzodiazepin": ["azepam", "zolam"],
+  "Glukokortikoid": ["solon", "son"]
+};
+
+const UNITS = [
+{
+  id: "schmerz1", title: "Schmerz I", sub: "Nicht-Opioid-Analgetika", icon: "⚡", color: "#F0644F", dark: "#C94A37", area: "schmerz",
+  drugs: [
+    { n: "Paracetamol", b: "ben-u-ron", g: "Nicht-saures Analgetikum",
+      u: ["Leichte bis mäßige Schmerzen", "Fieber"],
+      w: "Hemmt die Prostaglandinbildung v. a. im ZNS → schmerzlindernd und fiebersenkend, kaum entzündungshemmend",
+      nw: ["Leberschädigung bei Überdosierung", "Selten Hautreaktionen"],
+      p: ["Tageshöchstdosis beachten (Leber!)", "Vorsicht bei Lebererkrankung und Alkohol", "i.v. als Kurzinfusion über ca. 15 min"],
+      uq: "Fieber und leichte Schmerzen", nq: "Leberschaden bei Überdosierung", pq: "Tageshöchstdosis wegen Lebertoxizität einhalten" },
+    { n: "Metamizol", b: "Novalgin", g: "Nicht-saures Analgetikum", t: ["kolik"],
+      u: ["Starke Schmerzen", "Kolikartige Schmerzen", "Hohes Fieber"],
+      w: "Schmerzlindernd, fiebersenkend und zusätzlich krampflösend (spasmolytisch)",
+      nw: ["Agranulozytose (selten, gefährlich)", "Blutdruckabfall bei zu schneller i.v.-Gabe", "Rotfärbung des Urins möglich"],
+      p: ["Bei Fieber, Halsschmerzen oder Mundschleimhaut-Entzündung an Agranulozytose denken", "i.v. langsam bzw. als Kurzinfusion", "Blutdruck kontrollieren"],
+      uq: "Koliken und starke Schmerzen", nq: "Agranulozytose", pq: "Bei Fieber und Halsschmerzen an Agranulozytose denken" },
+    { n: "Ibuprofen", b: "Ibuflam", g: "NSAR",
+      u: ["Schmerzen", "Entzündungen", "Fieber"],
+      w: "Hemmt die Cyclooxygenase (COX) → weniger Prostaglandine: schmerzlindernd, entzündungshemmend, fiebersenkend",
+      nw: ["Magenbeschwerden bis Magenblutung", "Nierenfunktionsstörung", "Blutdruckanstieg"],
+      p: ["Zum oder nach dem Essen geben", "Auf Magenschmerzen und Teerstuhl achten", "Bei Dauergabe oft mit Magenschutz (PPI)"],
+      uq: "Entzündliche Schmerzen und Fieber", nq: "Magenblutung", pq: "Zum Essen geben und auf Teerstuhl achten" },
+    { n: "Diclofenac", b: "Voltaren", g: "NSAR",
+      u: ["Rheumatische und entzündliche Schmerzen", "Gichtanfall", "Lokal als Gel"],
+      w: "COX-Hemmer: stark entzündungshemmend und schmerzlindernd",
+      nw: ["Magen-Darm-Geschwüre und Blutungen", "Erhöhtes Herzinfarkt- und Schlaganfallrisiko", "Nierenschädigung"],
+      p: ["Bei Herzinsuffizienz oder KHK nicht dauerhaft", "Magenschutz bedenken", "Nierenwerte und Blutdruck beobachten"],
+      uq: "Rheumatische Entzündungsschmerzen", nq: "Magen-Darm-Geschwüre", pq: "Nicht dauerhaft bei Herzerkrankungen" },
+    { n: "Etoricoxib", b: "Arcoxia", g: "COX-2-Hemmer (Coxib)",
+      u: ["Arthrose", "Rheumatoide Arthritis", "Akuter Gichtanfall"],
+      w: "Hemmt gezielt COX-2 → entzündungshemmend, weniger Magenprobleme als klassische NSAR",
+      nw: ["Blutdruckanstieg", "Ödeme", "Erhöhtes Herzinfarkt- und Schlaganfallrisiko"],
+      p: ["Blutdruck regelmäßig kontrollieren", "Auf Ödeme achten", "Nicht bei KHK oder Herzinsuffizienz"],
+      uq: "Arthrose-Schmerzen", nq: "Blutdruckanstieg und Ödeme", pq: "Regelmäßige Blutdruckkontrolle" }
+  ]
+},
+{
+  id: "schmerz2", title: "Schmerz II", sub: "Opioide & Antidot", icon: "🌙", color: "#7E62C4", dark: "#6249A3", area: "schmerz",
+  drugs: [
+    { n: "Tramadol", b: "Tramal", g: "Opioid (schwach wirksam)", t: ["opioid"],
+      u: ["Mäßige bis starke Schmerzen"],
+      w: "Wirkt an Opioid-Rezeptoren und hemmt zusätzlich die Wiederaufnahme von Serotonin und Noradrenalin",
+      nw: ["Übelkeit und Erbrechen (häufig)", "Schwindel", "Krampfanfälle bei hoher Dosis"],
+      p: ["Zu Therapiebeginn Antiemetikum bereithalten", "Sturzgefahr beachten", "Vorsicht mit anderen serotonergen Mitteln (Serotonin-Syndrom)"],
+      uq: "Mäßig starke Schmerzen", nq: "Starke Übelkeit zu Therapiebeginn", pq: "Antiemetikum zu Therapiebeginn bereithalten" },
+    { n: "Tilidin/Naloxon", b: "Valoron N", g: "Opioid (schwach wirksam)", t: ["opioid"],
+      u: ["Mäßige bis starke Schmerzen"],
+      w: "Tilidin wirkt opioid-schmerzlindernd; Naloxon soll Missbrauch (Injektion) verhindern",
+      nw: ["Übelkeit", "Schwindel, Müdigkeit", "Obstipation"],
+      p: ["Retardtabletten nicht teilen oder mörsern", "Auf Sedierung und Sturzgefahr achten", "Tropfen unterliegen dem BtMG"],
+      uq: "Mäßig starke Schmerzen", nq: "Schwindel und Müdigkeit", pq: "Retardtabletten nicht teilen oder mörsern" },
+    { n: "Morphin", b: "MST / Sevredol", g: "Opioid (stark wirksam, BtM)", t: ["opioid"],
+      u: ["Starke und stärkste Schmerzen", "Atemnot in der Palliativversorgung", "Schmerz beim Herzinfarkt"],
+      w: "Stimuliert µ-Opioid-Rezeptoren im ZNS → starke Schmerzlinderung, dämpft Atemantrieb und Hustenreiz",
+      nw: ["Atemdepression", "Obstipation (bleibt dauerhaft!)", "Übelkeit, Sedierung, enge Pupillen"],
+      p: ["Atemfrequenz und Bewusstsein überwachen", "Von Anfang an Laxans geben (Obstipationsprophylaxe)", "BtM: Dokumentation und Verschluss"],
+      uq: "Stärkste Schmerzen und Atemnot (palliativ)", nq: "Atemdepression", pq: "Begleitend immer ein Abführmittel" },
+    { n: "Oxycodon", b: "Oxygesic", g: "Opioid (stark wirksam, BtM)", t: ["opioid"],
+      u: ["Starke Schmerzen (z. B. Tumorschmerz)"],
+      w: "Starkes µ-Opioid; als Kombination mit Naloxon (Targin) weniger Obstipation",
+      nw: ["Obstipation", "Atemdepression", "Müdigkeit, Übelkeit"],
+      p: ["Retardtabletten nicht teilen oder mörsern", "Laxans begleitend", "Schmerzskala regelmäßig erheben"],
+      uq: "Starke Tumorschmerzen", nq: "Obstipation", pq: "Schmerzskala regelmäßig erheben" },
+    { n: "Hydromorphon", b: "Palladon", g: "Opioid (stark wirksam, BtM)", t: ["opioid"],
+      u: ["Sehr starke Schmerzen", "Geeignet bei Niereninsuffizienz"],
+      w: "Sehr potentes µ-Opioid (oral etwa 5-mal stärker als Morphin)",
+      nw: ["Atemdepression", "Obstipation", "Übelkeit, Juckreiz"],
+      p: ["Hohe Potenz: Verwechslung mit Morphin vermeiden", "Atmung und Bewusstsein beobachten", "Laxans begleitend"],
+      uq: "Starke Schmerzen bei Niereninsuffizienz", nq: "Atemdepression", pq: "Verwechslung mit Morphin vermeiden (stärker!)" },
+    { n: "Fentanyl (Pflaster)", b: "Durogesic", g: "Opioid (stark wirksam, BtM)", t: ["opioid"],
+      u: ["Chronische, stabile starke Schmerzen", "Tumorschmerz"],
+      w: "Sehr starkes Opioid; das Pflaster gibt über 72 h gleichmäßig ab, Wirkung erst nach 12–24 h",
+      nw: ["Atemdepression", "Obstipation", "Hautreaktionen an der Klebestelle"],
+      p: ["Alle 72 h wechseln, Klebestelle wechseln", "Keine Wärme (Wärmflasche, Sauna, Heizdecke); Fieber dem Arzt melden → mehr Wirkstoffaufnahme", "Altes Pflaster zusammenkleben und sicher entsorgen"],
+      uq: "Chronische Tumorschmerzen (Pflaster)", nq: "Hautreaktion an der Klebestelle", pq: "Keine Wärme auf das Pflaster" },
+    { n: "Naloxon", b: "Naloxon-ratiopharm", g: "Opioid-Antagonist (Antidot)", t: ["opioid", "antidot"],
+      u: ["Opioid-Überdosierung", "Aufhebung einer Opioid-Atemdepression"],
+      w: "Verdrängt Opioide von ihren Rezeptoren → hebt ihre Wirkung auf",
+      nw: ["Entzugssymptome bei Opioid-Gewöhnung", "Wiederkehrende Schmerzen", "Blutdruckanstieg, Tachykardie"],
+      p: ["Kurze Wirkdauer: Patient nachbeobachten (Rebound)", "Vorsichtig titrieren", "Atmung weiter überwachen"],
+      uq: "Opioid-Überdosierung", nq: "Akute Entzugssymptome", pq: "Nachbeobachten – wirkt kürzer als das Opioid" }
+  ]
+},
+{
+  id: "gerinnung", title: "Blutgerinnung", sub: "Plättchenhemmer & Antikoagulanzien", icon: "🩸", color: "#D9486F", dark: "#B23557", area: "gerinnung",
+  drugs: [
+    { n: "ASS 100", b: "Aspirin protect", g: "Thrombozytenaggregationshemmer",
+      u: ["Nach Herzinfarkt oder Schlaganfall", "KHK, nach Stent"],
+      w: "Hemmt irreversibel die COX der Blutplättchen → sie verkleben schlechter (für ihre Lebensdauer von 7–10 Tagen)",
+      nw: ["Erhöhte Blutungsneigung", "Magenschleimhautschäden", "Asthmaanfall bei Analgetika-Asthma"],
+      p: ["Auf Blutungszeichen achten (Zahnfleisch, Teerstuhl)", "Vor OPs Absetzen mit Arzt klären", "Nicht eigenmächtig absetzen (Stent!)"],
+      uq: "Schutz vor erneutem Herzinfarkt oder Schlaganfall", nq: "Erhöhte Blutungsneigung", pq: "Nicht eigenmächtig absetzen – Stentthrombose-Gefahr" },
+    { n: "Clopidogrel", b: "Plavix", g: "Thrombozytenaggregationshemmer",
+      u: ["Nach Stent (meist mit ASS = duale Plättchenhemmung)", "pAVK, Schlaganfall"],
+      w: "Blockiert den ADP-Rezeptor (P2Y12) der Blutplättchen → hemmt ihre Aktivierung",
+      nw: ["Blutungen", "Durchfall", "Hautausschlag"],
+      p: ["Duale Plättchenhemmung nie eigenmächtig beenden", "Blutungszeichen beobachten", "Vor Eingriffen Arzt informieren"],
+      uq: "Nach Stent zusammen mit ASS", nq: "Blutungen", pq: "Vor Eingriffen den Arzt informieren" },
+    { n: "Heparin", b: "Heparin-Natrium", g: "Unfraktioniertes Heparin",
+      u: ["Thrombose und Lungenembolie (i.v.)", "Thromboseprophylaxe", "Dialyse, Herz-Lungen-Maschine"],
+      w: "Verstärkt Antithrombin → hemmt Thrombin und Faktor Xa",
+      nw: ["Blutungen", "HIT (Heparin-induzierte Thrombozytopenie)", "Osteoporose bei Langzeitgabe"],
+      p: ["Steuerung über die aPTT", "Thrombozyten kontrollieren (HIT!)", "Antidot: Protamin"],
+      uq: "Akute Thrombose oder Lungenembolie (Perfusor)", nq: "HIT – Abfall der Thrombozyten", pq: "Laborkontrolle über die aPTT" },
+    { n: "Enoxaparin", b: "Clexane", g: "Niedermolekulares Heparin (NMH)",
+      u: ["Thromboseprophylaxe (nach OP, bei Immobilität)", "Therapie von Thrombosen"],
+      w: "Hemmt über Antithrombin v. a. Faktor Xa",
+      nw: ["Hämatome an der Einstichstelle", "Blutungen", "HIT (seltener als bei Heparin)"],
+      p: ["s.c. in die Bauchfalte, Luftblase der Fertigspritze nicht entfernen", "Einstichstelle nicht reiben", "Bei Niereninsuffizienz Dosis anpassen"],
+      uq: "Thromboseprophylaxe nach OP (s.c.)", nq: "Hämatome an der Einstichstelle", pq: "Luftblase in der Fertigspritze nicht entfernen" },
+    { n: "Phenprocoumon", b: "Marcumar", g: "Vitamin-K-Antagonist",
+      u: ["Mechanische Herzklappe", "Vorhofflimmern", "Thrombose (Langzeit)"],
+      w: "Hemmt die Bildung Vitamin-K-abhängiger Gerinnungsfaktoren (II, VII, IX, X) in der Leber",
+      nw: ["Blutungen bei zu hohem INR", "Haarausfall", "Hautnekrosen (selten)"],
+      p: ["Regelmäßige INR-Kontrolle", "Vitamin-K-reiche Kost gleichmäßig, nicht schwankend", "Viele Wechselwirkungen – keine Selbstmedikation (z. B. NSAR)"],
+      uq: "Mechanische Herzklappe", nq: "Blutungen bei zu hohem INR", pq: "Regelmäßige INR-Kontrolle" },
+    { n: "Apixaban", b: "Eliquis", g: "Faktor-Xa-Hemmer (DOAK)",
+      u: ["Schlaganfallschutz bei Vorhofflimmern", "Thrombose, Lungenembolie"],
+      w: "Hemmt direkt den Gerinnungsfaktor Xa",
+      nw: ["Blutungen", "Anämie", "Übelkeit"],
+      p: ["2× täglich zu festen Zeiten", "Keine INR-Kontrolle nötig", "Pausen vor OPs mit Arzt absprechen"],
+      uq: "Schlaganfallschutz bei Vorhofflimmern", nq: "Blutungen", pq: "Zweimal täglich zu festen Zeiten" },
+    { n: "Rivaroxaban", b: "Xarelto", g: "Faktor-Xa-Hemmer (DOAK)",
+      u: ["Vorhofflimmern", "Thrombose, Lungenembolie", "Prophylaxe nach Hüft-/Knie-OP"],
+      w: "Hemmt direkt den Gerinnungsfaktor Xa",
+      nw: ["Blutungen", "Anämie", "Schwindel"],
+      p: ["15 mg und 20 mg immer zu einer Mahlzeit", "Auf Blutungszeichen achten", "Kein Routinelabor nötig"],
+      uq: "Schlaganfallschutz bei Vorhofflimmern", nq: "Blutungen", pq: "Ab 15 mg zusammen mit einer Mahlzeit" }
+  ]
+},
+{
+  id: "herz1", title: "Blutdruck", sub: "Herz & Kreislauf I", icon: "❤️", color: "#EE8A43", dark: "#C96E2C", area: "herz",
+  drugs: [
+    { n: "Ramipril", b: "Delix", g: "ACE-Hemmer",
+      u: ["Hypertonie", "Herzinsuffizienz", "Nach Herzinfarkt"],
+      w: "Hemmt das Angiotensin-Converting-Enzym → weniger Angiotensin II → Gefäße weiten sich, Blutdruck sinkt",
+      nw: ["Trockener Reizhusten", "Angioödem (Schwellung von Gesicht/Zunge)", "Hyperkaliämie"],
+      p: ["Blutdruck vor Gabe messen", "Schwellung von Lippen/Zunge = Notfall, sofort Arzt", "Kalium- und Nierenwerte kontrollieren"],
+      uq: "Bluthochdruck und Herzinsuffizienz", nq: "Trockener Reizhusten", pq: "Bei Zungenschwellung sofort Arzt rufen" },
+    { n: "Candesartan", b: "Atacand", g: "Sartan (AT1-Blocker)",
+      u: ["Hypertonie", "Herzinsuffizienz"],
+      w: "Blockiert den AT1-Rezeptor für Angiotensin II → Gefäßerweiterung",
+      nw: ["Schwindel, Blutdruckabfall", "Hyperkaliämie", "Verschlechterung der Nierenfunktion"],
+      p: ["Blutdruck kontrollieren", "Kalium und Kreatinin kontrollieren", "Alternative, wenn ACE-Hemmer Husten auslösen"],
+      uq: "Bluthochdruck", nq: "Hyperkaliämie", pq: "Alternative bei ACE-Hemmer-Husten" },
+    { n: "Bisoprolol", b: "Concor", g: "Betablocker",
+      u: ["Hypertonie", "KHK", "Herzinsuffizienz", "Tachykarde Rhythmusstörungen"],
+      w: "Blockiert β1-Rezeptoren am Herzen → Herzfrequenz und Blutdruck sinken, das Herz braucht weniger Sauerstoff",
+      nw: ["Bradykardie", "Müdigkeit, kalte Hände und Füße", "Bronchospasmus bei Asthma"],
+      p: ["Puls vor Gabe messen", "Nicht abrupt absetzen (Rebound)", "Kann Unterzuckerungszeichen verschleiern"],
+      uq: "KHK, Herzinsuffizienz und zu schneller Puls", nq: "Bradykardie", pq: "Puls vor Gabe messen" },
+    { n: "Metoprolol", b: "Beloc-Zok", g: "Betablocker",
+      u: ["Hypertonie", "KHK", "Herzrhythmusstörungen", "Migräneprophylaxe"],
+      w: "β1-selektiver Betablocker → senkt Puls, Blutdruck und Sauerstoffbedarf des Herzens",
+      nw: ["Bradykardie", "Müdigkeit, Schwindel", "Kalte Extremitäten"],
+      p: ["Puls und Blutdruck kontrollieren", "Retardtablette nicht zerkauen (an der Bruchkerbe teilbar)", "Nicht abrupt absetzen"],
+      uq: "Bluthochdruck und Herzrhythmusstörungen", nq: "Bradykardie", pq: "Nicht abrupt absetzen" },
+    { n: "Amlodipin", b: "Norvasc", g: "Calciumkanalblocker",
+      u: ["Hypertonie", "Stabile Angina pectoris"],
+      w: "Blockiert Calciumkanäle der Gefäßmuskulatur → Gefäße weiten sich",
+      nw: ["Knöchelödeme", "Kopfschmerz, Flush", "Zahnfleischwucherung"],
+      p: ["Auf Knöchelödeme achten (helfen keine Diuretika)", "Blutdruck kontrollieren", "Grapefruitsaft meiden"],
+      uq: "Bluthochdruck", nq: "Knöchelödeme", pq: "Auf Knöchelödeme achten" },
+    { n: "Moxonidin", b: "Cynt", g: "Zentral wirksames Antihypertensivum",
+      u: ["Hypertonie (Zusatzmittel)"],
+      w: "Senkt den Sympathikotonus über Rezeptoren im Hirnstamm",
+      nw: ["Mundtrockenheit", "Müdigkeit", "Schwindel"],
+      p: ["Nicht abrupt absetzen (Blutdruckanstieg)", "Sturzgefahr beachten", "Blutdruck kontrollieren"],
+      uq: "Bluthochdruck als Zusatzmittel", nq: "Mundtrockenheit", pq: "Nicht abrupt absetzen – Blutdruck steigt" }
+  ]
+},
+{
+  id: "herz2", title: "Herz & Wasser", sub: "Herz & Kreislauf II", icon: "💧", color: "#3B87CF", dark: "#2B6BAA", area: "herz",
+  drugs: [
+    { n: "Furosemid", b: "Lasix", g: "Schleifendiuretikum",
+      u: ["Ödeme (z. B. bei Herzinsuffizienz)", "Lungenödem", "Hypertonie bei Niereninsuffizienz"],
+      w: "Hemmt die Salzrückresorption in der Henle-Schleife → starke Wasserausscheidung",
+      nw: ["Hypokaliämie", "Exsikkose", "Hörschäden bei schneller i.v.-Gabe hoher Dosen"],
+      p: ["Täglich wiegen", "Ein- und Ausfuhr bilanzieren", "Morgens geben (sonst nächtlicher Harndrang)"],
+      uq: "Ödeme und Lungenödem", nq: "Hypokaliämie", pq: "Täglich das Gewicht kontrollieren" },
+    { n: "Torasemid", b: "Torem", g: "Schleifendiuretikum",
+      u: ["Ödeme", "Herzinsuffizienz", "Hypertonie"],
+      w: "Schleifendiuretikum mit längerer Wirkdauer als Furosemid",
+      nw: ["Hypokaliämie, Hyponatriämie", "Exsikkose", "Schwindel"],
+      p: ["Morgens geben", "Elektrolyte (Kalium, Natrium) kontrollieren", "Auf Austrocknung achten (v. a. ältere Menschen)"],
+      uq: "Ödeme bei Herzinsuffizienz", nq: "Exsikkose (Austrocknung)", pq: "Morgens geben" },
+    { n: "Hydrochlorothiazid", b: "Esidrix", g: "Thiazid-Diuretikum",
+      u: ["Hypertonie (oft in Kombination)", "Leichte Ödeme"],
+      w: "Hemmt die Salzrückresorption im distalen Tubulus der Niere",
+      nw: ["Hypokaliämie, Hyponatriämie", "Harnsäureanstieg (Gicht)", "Blutzuckeranstieg"],
+      p: ["Elektrolyte kontrollieren", "Sonnenschutz (erhöhtes Hautkrebsrisiko)", "Auf Gichtanfälle achten"],
+      uq: "Bluthochdruck in Kombinationen", nq: "Harnsäureanstieg (Gichtanfall)", pq: "Auf konsequenten Sonnenschutz achten" },
+    { n: "Spironolacton", b: "Aldactone", g: "Kaliumsparendes Diuretikum",
+      u: ["Herzinsuffizienz", "Aszites bei Leberzirrhose", "Hyperaldosteronismus"],
+      w: "Blockiert Aldosteron-Rezeptoren → Natrium wird ausgeschieden, Kalium bleibt im Körper",
+      nw: ["Hyperkaliämie", "Gynäkomastie (Brustvergrößerung beim Mann)", "Zyklusstörungen"],
+      p: ["Kalium kontrollieren", "Keine Kaliumpräparate ohne Anordnung", "Auf schmerzhafte Brustschwellung achten"],
+      uq: "Aszites bei Leberzirrhose", nq: "Gynäkomastie", pq: "Keine Kaliumpräparate ohne Anordnung" },
+    { n: "Glyceroltrinitrat", b: "Nitrolingual", g: "Nitrat", t: ["notfall"],
+      u: ["Akuter Angina-pectoris-Anfall", "Lungenödem, hypertensive Krise"],
+      w: "Setzt NO frei → erweitert v. a. die Venen → Herz wird entlastet und braucht weniger Sauerstoff",
+      nw: ["Nitrokopfschmerz", "Blutdruckabfall, Schwindel", "Reflextachykardie"],
+      p: ["Vorher Blutdruck messen (nicht bei niedrigem RR)", "Im Sitzen anwenden", "Nicht mit PDE-5-Hemmern (z. B. Sildenafil)"],
+      uq: "Akuter Angina-pectoris-Anfall", nq: "Starke Kopfschmerzen", pq: "Nicht zusammen mit Sildenafil (Viagra)" },
+    { n: "Digitoxin", b: "Digimerck", g: "Herzglykosid",
+      u: ["Herzinsuffizienz", "Vorhofflimmern (Frequenzkontrolle)"],
+      w: "Hemmt die Na/K-ATPase → Herz schlägt kräftiger und langsamer",
+      nw: ["Übelkeit, Erbrechen (Vergiftungszeichen)", "Gelb-Grün-Sehen", "Herzrhythmusstörungen, Bradykardie"],
+      p: ["Puls vor Gabe zählen", "Übelkeit und Sehstörungen → an Überdosierung denken", "Hypokaliämie erhöht die Giftigkeit"],
+      uq: "Herzinsuffizienz mit Vorhofflimmern", nq: "Gelb-Grün-Sehen", pq: "Bei Farbsehstörungen an Überdosierung denken" },
+    { n: "Atorvastatin", b: "Sortis", g: "Statin",
+      u: ["Erhöhtes LDL-Cholesterin", "Vorbeugung von Herzinfarkt und Schlaganfall"],
+      w: "Hemmt die HMG-CoA-Reduktase → die Leber bildet weniger Cholesterin",
+      nw: ["Muskelschmerzen", "Rhabdomyolyse (selten)", "Leberwerterhöhung"],
+      p: ["Muskelschmerzen oder -schwäche melden", "Leberwerte kontrollieren", "Dauerhafte Einnahme – Therapietreue fördern"],
+      uq: "Zu hohes Cholesterin", nq: "Muskelschmerzen", pq: "Muskelschmerzen ernst nehmen und melden" }
+  ]
+},
+{
+  id: "diabetes", title: "Diabetes", sub: "Antidiabetika & Insuline", icon: "🍬", color: "#D9A12A", dark: "#B3831D", area: "diabetes",
+  drugs: [
+    { n: "Metformin", b: "Glucophage", g: "Biguanid",
+      u: ["Typ-2-Diabetes (Mittel der 1. Wahl)"],
+      w: "Hemmt die Zuckerneubildung in der Leber und verbessert die Insulinwirkung; allein keine Unterzuckerung",
+      nw: ["Magen-Darm-Beschwerden, Durchfall", "Laktatazidose (selten, gefährlich)", "Vitamin-B12-Mangel"],
+      p: ["Zu oder nach den Mahlzeiten", "Vor Kontrastmittel/OP nach Anordnung pausieren", "Nierenfunktion beachten"],
+      uq: "Typ-2-Diabetes (1. Wahl)", nq: "Laktatazidose", pq: "Vor Kontrastmittel-Untersuchungen pausieren" },
+    { n: "Glimepirid", b: "Amaryl", g: "Sulfonylharnstoff",
+      u: ["Typ-2-Diabetes"],
+      w: "Regt die Bauchspeicheldrüse zur Insulinfreisetzung an – unabhängig vom Blutzucker",
+      nw: ["Lang anhaltende Hypoglykämie", "Gewichtszunahme", "Magen-Darm-Beschwerden"],
+      p: ["Regelmäßige Mahlzeiten sicherstellen", "Hypo-Zeichen kennen, BZ kontrollieren", "Besonders riskant bei älteren Menschen"],
+      uq: "Typ-2-Diabetes", nq: "Lang anhaltende Unterzuckerung", pq: "Mahlzeiten nicht auslassen" },
+    { n: "Sitagliptin", b: "Januvia", g: "DPP-4-Hemmer (Gliptin)",
+      u: ["Typ-2-Diabetes"],
+      w: "Hemmt den Abbau des Darmhormons GLP-1 → mehr Insulin nur bei hohem Blutzucker",
+      nw: ["Kopfschmerzen", "Infekte der oberen Atemwege", "Pankreatitis (selten)"],
+      p: ["Geringes Unterzuckerungsrisiko", "Starke Oberbauchschmerzen → Arzt (Pankreatitis?)", "Nierenfunktion beachten"],
+      uq: "Typ-2-Diabetes", nq: "Bauchspeicheldrüsenentzündung (selten)", pq: "Bei starken Oberbauchschmerzen Arzt informieren" },
+    { n: "Empagliflozin", b: "Jardiance", g: "SGLT-2-Hemmer (Gliflozin)", t: ["herz"],
+      u: ["Typ-2-Diabetes", "Herzinsuffizienz", "Chronische Nierenerkrankung"],
+      w: "Hemmt die Zuckerrückresorption in der Niere → Zucker wird mit dem Urin ausgeschieden",
+      nw: ["Genitale Pilzinfektionen", "Harnwegsinfekte", "Ketoazidose (auch bei normalem BZ)"],
+      p: ["Auf gute Intimhygiene achten", "Ausreichend trinken", "Vor großen OPs nach Anordnung pausieren"],
+      uq: "Diabetes mit Herzinsuffizienz", nq: "Genitale Pilzinfektionen", pq: "Auf gute Intimhygiene achten" },
+    { n: "Semaglutid", b: "Ozempic", g: "GLP-1-Rezeptoragonist",
+      u: ["Typ-2-Diabetes", "Adipositas"],
+      w: "Wirkt wie das Darmhormon GLP-1: mehr Insulin bei hohem BZ, langsamere Magenentleerung, weniger Appetit",
+      nw: ["Übelkeit, Erbrechen", "Durchfall oder Verstopfung", "Pankreatitis (selten)"],
+      p: ["1× wöchentlich s.c. per Pen", "Kleine Mahlzeiten bei Übelkeit", "Auf Oberbauchschmerzen achten"],
+      uq: "Typ-2-Diabetes und Übergewicht", nq: "Übelkeit und Erbrechen", pq: "Einmal pro Woche als Pen" },
+    { n: "Insulin aspart", b: "NovoRapid", g: "Kurzwirksames Insulin",
+      u: ["Mahlzeiteninsulin (Bolus)", "Korrektur hoher BZ-Werte", "Diabetes Typ 1 und 2"],
+      w: "Senkt den Blutzucker; Wirkbeginn nach ca. 10–20 min, Wirkdauer 3–5 h",
+      nw: ["Hypoglykämie", "Lipohypertrophie an den Spritzstellen", "Gewichtszunahme"],
+      p: ["Direkt vor dem Essen spritzen (kein Spritz-Ess-Abstand nötig)", "Spritzstellen regelmäßig wechseln", "Angebrochener Pen bei Raumtemperatur, Vorrat im Kühlschrank"],
+      uq: "Insulin zu den Mahlzeiten", nq: "Hypoglykämie", pq: "Spritzstellen regelmäßig wechseln" },
+    { n: "Insulin glargin", b: "Lantus", g: "Langwirksames Insulin",
+      u: ["Basalinsulin bei Diabetes Typ 1 und 2"],
+      w: "Gleichmäßige Wirkung über ca. 24 h ohne ausgeprägten Wirkgipfel",
+      nw: ["Hypoglykämie", "Lipohypertrophie", "Reaktionen an der Einstichstelle"],
+      p: ["1× täglich zur gleichen Uhrzeit", "Nicht mit anderen Insulinen mischen", "Klare Lösung – nicht schwenken nötig"],
+      uq: "Basalinsulin für den Grundbedarf", nq: "Hypoglykämie", pq: "Jeden Tag zur gleichen Uhrzeit spritzen" }
+  ]
+},
+{
+  id: "magen", title: "Magen & Darm", sub: "Magenschutz, Übelkeit, Verdauung", icon: "🫃", color: "#4FA37A", dark: "#3B835F", area: "magen",
+  drugs: [
+    { n: "Pantoprazol", b: "Pantozol", g: "Protonenpumpenhemmer (PPI)",
+      u: ["Magenschutz (z. B. bei NSAR, Kortison)", "Refluxkrankheit", "Magen- und Zwölffingerdarmgeschwür"],
+      w: "Hemmt die Protonenpumpe der Magenzellen → deutlich weniger Magensäure",
+      nw: ["Kopfschmerz, Durchfall", "Magnesiummangel bei Langzeitgabe", "Osteoporose- und Infektrisiko (C. difficile) bei Dauergabe"],
+      p: ["1 Stunde vor einer Mahlzeit geben (meist vor dem Frühstück)", "Tablette nicht zerkleinern (magensaftresistent)", "Dauergabe regelmäßig überprüfen lassen"],
+      uq: "Magenschutz und Reflux", nq: "Magnesiummangel bei Langzeitgabe", pq: "1 Stunde vor dem Frühstück geben" },
+    { n: "Metoclopramid", b: "Paspertin (MCP)", g: "Antiemetikum (Dopamin-Blocker)",
+      u: ["Übelkeit und Erbrechen", "Magenentleerungsstörung"],
+      w: "Blockiert Dopamin-Rezeptoren → gegen Übelkeit, beschleunigt die Magenentleerung",
+      nw: ["Extrapyramidale Störungen (Zungen-/Schlundkrämpfe)", "Müdigkeit", "Unruhe"],
+      p: ["Höchstens 5 Tage anwenden", "Nicht bei Morbus Parkinson", "Auf Bewegungsstörungen achten (v. a. junge Menschen)"],
+      uq: "Übelkeit und Erbrechen", nq: "Zungen- und Schlundkrämpfe", pq: "Nicht bei Morbus Parkinson geben" },
+    { n: "Ondansetron", b: "Zofran", g: "Antiemetikum (5-HT3-Blocker)",
+      u: ["Übelkeit bei Chemotherapie", "Übelkeit nach Operationen"],
+      w: "Blockiert Serotonin-Rezeptoren (5-HT3) im Darm und im Brechzentrum",
+      nw: ["Obstipation", "Kopfschmerzen", "QT-Zeit-Verlängerung"],
+      p: ["Auf Verstopfung achten", "Vorsicht bei Herzrhythmusstörungen", "Vor der Chemotherapie geben"],
+      uq: "Übelkeit bei Chemotherapie", nq: "QT-Zeit-Verlängerung", pq: "Vor der Chemotherapie geben" },
+    { n: "Macrogol", b: "Movicol", g: "Osmotisches Laxans",
+      u: ["Obstipation", "Koprostase", "Darmvorbereitung"],
+      w: "Bindet Wasser im Darm → Stuhl wird weicher und voluminöser",
+      nw: ["Blähungen", "Bauchschmerzen", "Durchfall bei Überdosierung"],
+      p: ["Pulver in ausreichend Wasser auflösen", "Gut zur Obstipationsprophylaxe unter Opioiden", "Stuhlgang dokumentieren"],
+      uq: "Verstopfung", nq: "Blähungen", pq: "Pulver in ausreichend Wasser auflösen" },
+    { n: "Lactulose", b: "Bifiteral", g: "Osmotisches Laxans",
+      u: ["Obstipation", "Hepatische Enzephalopathie"],
+      w: "Wird im Dickdarm zu Säuren abgebaut → bindet Wasser und senkt die Ammoniak-Aufnahme",
+      nw: ["Starke Blähungen", "Bauchkrämpfe", "Elektrolytverlust bei Durchfall"],
+      p: ["Wirkung nach 2–10 Stunden, manchmal erst nach 1–2 Tagen", "Bei hepatischer Enzephalopathie: 2–3 weiche Stühle pro Tag", "Ausreichend trinken"],
+      uq: "Hepatische Enzephalopathie", nq: "Starke Blähungen", pq: "Wirkung kann bis zu 1–2 Tage dauern" },
+    { n: "Loperamid", b: "Imodium", g: "Antidiarrhoikum", t: ["opioid"],
+      u: ["Akuter Durchfall"],
+      w: "Wirkt an Opioid-Rezeptoren im Darm → bremst die Darmbewegung (normal dosiert keine Wirkung im Gehirn)",
+      nw: ["Verstopfung", "Bauchkrämpfe", "Blähungen"],
+      p: ["Nicht bei blutigem Durchfall oder Fieber", "Flüssigkeit und Elektrolyte ersetzen", "Nicht bei Kleinkindern"],
+      uq: "Akuter Durchfall", nq: "Verstopfung", pq: "Nicht bei blutigem Durchfall oder Fieber" },
+    { n: "Butylscopolamin", b: "Buscopan", g: "Spasmolytikum (Parasympatholytikum)", t: ["kolik"],
+      u: ["Krampfartige Bauchschmerzen", "Gallen- und Nierenkoliken", "Rasselatmung (palliativ)"],
+      w: "Hemmt Acetylcholin an der glatten Muskulatur → löst Krämpfe in Magen, Darm, Gallen- und Harnwegen",
+      nw: ["Mundtrockenheit", "Tachykardie", "Harnverhalt, Sehstörungen"],
+      p: ["Nicht bei Engwinkelglaukom", "Auf Harnverhalt achten", "Palliativ gegen Rasselatmung"],
+      uq: "Krampfartige Bauchschmerzen", nq: "Mundtrockenheit", pq: "Nicht bei Engwinkelglaukom" }
+  ]
+},
+{
+  id: "infekt", title: "Infektionen", sub: "Antibiotika, Viren & Pilze", icon: "🦠", color: "#0E7C7B", dark: "#0A5F5E", area: "infekt",
+  drugs: [
+    { n: "Amoxicillin", b: "Amoxypen", g: "Penicillin",
+      u: ["Atemwegsinfekte", "Mittelohrentzündung", "Harnwegsinfekte", "H.-pylori-Therapie"],
+      w: "Hemmt den Zellwandaufbau der Bakterien → Bakterien sterben ab (bakterizid)",
+      nw: ["Allergie bis Anaphylaxie", "Hautausschlag", "Durchfall"],
+      p: ["Vorher nach Penicillin-Allergie fragen", "Über die gesamte verordnete Dauer einnehmen", "Auf Ausschlag und Durchfall achten"],
+      uq: "Atemwegs- und HNO-Infekte", nq: "Allergische Reaktion (Penicillin-Allergie)", pq: "Vorher nach Penicillin-Allergie fragen" },
+    { n: "Piperacillin/Tazobactam", b: "Tazobac", g: "Penicillin + Betalaktamase-Hemmer",
+      u: ["Schwere Infektionen im Krankenhaus", "Pneumonie, Sepsis, Bauchraum-Infekte"],
+      w: "Breitband-Penicillin; Tazobactam schützt es vor bakteriellen Abbau-Enzymen",
+      nw: ["Allergische Reaktionen", "Durchfall (auch C. difficile)", "Blutbildveränderungen"],
+      p: ["Nur i.v. – Infusionszeiten genau einhalten", "Allergie-Anamnese", "Auf Durchfall achten"],
+      uq: "Schwere Krankenhausinfektionen und Sepsis", nq: "Clostridioides-difficile-Durchfall", pq: "Infusionszeiten genau einhalten" },
+    { n: "Cefuroxim", b: "Elobact", g: "Cephalosporin",
+      u: ["Atemwegsinfekte", "Harnwegsinfekte", "Infektionsprophylaxe bei OPs"],
+      w: "Hemmt den Zellwandaufbau der Bakterien (bakterizid)",
+      nw: ["Durchfall", "Kreuzallergie mit Penicillin möglich", "Leberwerterhöhung"],
+      p: ["Tabletten mit einer Mahlzeit (bessere Aufnahme)", "Bei Penicillin-Allergie nachfragen", "Auf Durchfall achten"],
+      uq: "Infektionsprophylaxe bei Operationen", nq: "Kreuzallergie mit Penicillin", pq: "Tabletten mit einer Mahlzeit einnehmen" },
+    { n: "Ciprofloxacin", b: "Ciprobay", g: "Fluorchinolon (Gyrasehemmer)",
+      u: ["Komplizierte Harnwegsinfekte", "Prostatitis", "Gramnegative Infektionen"],
+      w: "Hemmt die bakterielle Gyrase → die Bakterien-DNA kann sich nicht mehr verdoppeln",
+      nw: ["Sehnenentzündung bis Sehnenriss", "Verwirrtheit, Unruhe (v. a. ältere Menschen)", "QT-Zeit-Verlängerung"],
+      p: ["Nicht zusammen mit Milch, Calcium, Magnesium", "Fersen-/Sehnenschmerzen sofort melden", "Starke Sonne meiden"],
+      uq: "Komplizierte Harnwegsinfekte", nq: "Sehnenriss (z. B. Achillessehne)", pq: "Sehnenschmerzen sofort melden" },
+    { n: "Clarithromycin", b: "Klacid", g: "Makrolid",
+      u: ["Atypische Pneumonie", "Atemwegsinfekte bei Penicillin-Allergie", "H.-pylori-Therapie"],
+      w: "Hemmt die bakterielle Proteinsynthese (bakteriostatisch)",
+      nw: ["Magen-Darm-Beschwerden", "Geschmacksstörungen", "QT-Zeit-Verlängerung, viele Wechselwirkungen"],
+      p: ["Wechselwirkungen prüfen (z. B. Statine)", "Auf Herzrhythmus achten", "Gleichmäßig über den Tag verteilt"],
+      uq: "Atypische Pneumonie", nq: "Geschmacksstörungen", pq: "Viele Wechselwirkungen (z. B. mit Statinen)" },
+    { n: "Doxycyclin", b: "Doxyhexal", g: "Tetracyclin",
+      u: ["Borreliose (nach Zeckenstich)", "Atemwegsinfekte", "Akne"],
+      w: "Hemmt die bakterielle Proteinsynthese (bakteriostatisch)",
+      nw: ["Phototoxizität (Sonnenbrand-Reaktion)", "Speiseröhrenreizung", "Zahnverfärbung bei Kindern"],
+      p: ["Mit viel Wasser in aufrechter Haltung", "Nicht mit Milch, Calcium oder Eisen", "Sonne meiden"],
+      uq: "Borreliose nach Zeckenstich", nq: "Phototoxizität (Sonnenbrand-Reaktion)", pq: "Starke Sonneneinstrahlung meiden" },
+    { n: "Aciclovir", b: "Zovirax", g: "Virostatikum",
+      u: ["Herpes simplex (Lippen, Genital)", "Gürtelrose (Herpes zoster)", "Herpes-Enzephalitis"],
+      w: "Hemmt die Vermehrung von Herpesviren",
+      nw: ["Nierenfunktionsstörung (i.v.)", "Übelkeit", "Kopfschmerz, Verwirrtheit"],
+      p: ["Viel trinken lassen (Nierenschutz)", "Möglichst früh beginnen", "i.v.: Venenreizung beachten"],
+      uq: "Gürtelrose und Herpes", nq: "Nierenfunktionsstörung bei i.v.-Gabe", pq: "Viel trinken lassen zum Schutz der Nieren" },
+    { n: "Fluconazol", b: "Diflucan", g: "Antimykotikum",
+      u: ["Candida-Infektionen (Mundsoor, Speiseröhre, vaginal)", "Systemische Pilzinfektionen"],
+      w: "Hemmt den Aufbau der Pilz-Zellmembran (Ergosterol)",
+      nw: ["Leberwerterhöhung", "Kopfschmerz, Übelkeit", "QT-Verlängerung, Wechselwirkungen"],
+      p: ["Wechselwirkungen beachten (z. B. Phenprocoumon)", "Leberwerte kontrollieren", "Bei Mundsoor zusätzlich Mundpflege"],
+      uq: "Pilzinfektionen wie Mundsoor", nq: "Leberwerterhöhung", pq: "Bei Mundsoor zusätzlich gute Mundpflege" }
+  ]
+},
+{
+  id: "atem", title: "Atemwege", sub: "Asthma & COPD", icon: "🫁", color: "#3AA2C2", dark: "#2A829E", area: "atem",
+  drugs: [
+    { n: "Salbutamol", b: "Sultanol", g: "Kurzwirksames Beta-2-Mimetikum (SABA)",
+      u: ["Akuter Asthmaanfall", "Akute Atemnot bei COPD (Bedarfsspray)"],
+      w: "Stimuliert β2-Rezeptoren der Bronchien → Bronchien weiten sich innerhalb von Minuten",
+      nw: ["Zittern (Tremor)", "Herzrasen", "Unruhe, Hypokaliämie"],
+      p: ["Inhalationstechnik schulen", "Häufiger Bedarf = schlechte Kontrolle → Arzt", "Puls beobachten"],
+      uq: "Akuter Asthmaanfall (Bedarfsspray)", nq: "Zittern und Herzrasen", pq: "Inhalationstechnik regelmäßig prüfen" },
+    { n: "Formoterol", b: "Foradil", g: "Langwirksames Beta-2-Mimetikum (LABA)",
+      u: ["COPD (Dauertherapie)", "Asthma (nur mit inhalativem Kortison)"],
+      w: "Weitet die Bronchien für ca. 12 Stunden",
+      nw: ["Tremor", "Herzklopfen", "Kopfschmerzen"],
+      p: ["Bei Asthma nie ohne inhalatives Kortison", "Regelmäßig, nicht nur bei Bedarf", "Inhalationstechnik prüfen"],
+      uq: "COPD-Dauertherapie", nq: "Herzklopfen", pq: "Bei Asthma nie ohne inhalatives Kortison" },
+    { n: "Ipratropiumbromid", b: "Atrovent", g: "Kurzwirksames Anticholinergikum (SAMA)",
+      u: ["Akute Atemnot bei COPD", "Schwerer Asthmaanfall (zusätzlich)"],
+      w: "Blockiert Acetylcholin-Rezeptoren der Bronchien → Bronchien weiten sich",
+      nw: ["Mundtrockenheit", "Husten", "Harnverhalt (selten)"],
+      p: ["Nicht in die Augen gelangen lassen (Glaukom)", "Inhalationstechnik", "Mundpflege"],
+      uq: "Akute Atemnot bei COPD", nq: "Mundtrockenheit", pq: "Nicht in die Augen gelangen lassen" },
+    { n: "Tiotropium", b: "Spiriva", g: "Langwirksames Anticholinergikum (LAMA)",
+      u: ["COPD (Dauertherapie)"],
+      w: "Blockiert Acetylcholin-Rezeptoren der Bronchien für ca. 24 h",
+      nw: ["Mundtrockenheit", "Obstipation", "Harnverhalt"],
+      p: ["1× täglich zur gleichen Zeit", "Kapsel nur inhalieren, nicht schlucken (HandiHaler)", "Vorsicht bei Prostatavergrößerung"],
+      uq: "COPD-Dauertherapie (1× täglich)", nq: "Mundtrockenheit", pq: "Kapsel nur inhalieren, nicht schlucken" },
+    { n: "Budesonid (inhalativ)", b: "Pulmicort", g: "Inhalatives Glukokortikoid (ICS)",
+      u: ["Asthma (Basis-Dauertherapie)", "COPD mit häufigen Exazerbationen"],
+      w: "Hemmt die Entzündung in den Bronchien",
+      nw: ["Mundsoor", "Heiserkeit", "In hoher Dosis Kortison-Nebenwirkungen"],
+      p: ["Nach dem Inhalieren Mund ausspülen oder vor dem Essen inhalieren", "Wirkt nicht im akuten Anfall", "Regelmäßig anwenden"],
+      uq: "Basis-Dauertherapie bei Asthma", nq: "Mundsoor", pq: "Nach dem Inhalieren Mund ausspülen" },
+    { n: "Acetylcystein", b: "ACC akut", g: "Mukolytikum",
+      u: ["Zäher Schleim bei Bronchitis", "Antidot bei Paracetamol-Vergiftung"],
+      w: "Spaltet Schleimstrukturen → Schleim wird dünnflüssiger",
+      nw: ["Magen-Darm-Beschwerden", "Allergische Reaktionen", "Bronchospasmus (bei Inhalation)"],
+      p: ["Viel trinken lassen", "Nicht spätabends geben (nächtlicher Hustenreiz)", "Brausetablette in Wasser auflösen"],
+      uq: "Zäher Bronchialschleim", nq: "Bronchospasmus bei Inhalation", pq: "Nicht spätabends geben" }
+  ]
+},
+{
+  id: "ruhe", title: "Schlaf & Unruhe", sub: "Benzodiazepine & Co.", icon: "😴", color: "#6F78D6", dark: "#5560B5", area: "psyche",
+  drugs: [
+    { n: "Lorazepam", b: "Tavor", g: "Benzodiazepin", t: ["anfall"],
+      u: ["Angst- und Unruhezustände", "Status epilepticus", "Vor Eingriffen (Prämedikation)"],
+      w: "Verstärkt die Wirkung von GABA → angstlösend, beruhigend, krampflösend, muskelentspannend",
+      nw: ["Müdigkeit, Sturzgefahr", "Abhängigkeit", "Atemdepression (v. a. mit Opioiden)"],
+      p: ["Sturzprophylaxe", "Nur kurzfristig (Abhängigkeit)", "Schmelztablette (Expidet) auf die Zunge legen"],
+      uq: "Akute Angst- und Unruhezustände", nq: "Abhängigkeit", pq: "Sturzprophylaxe nach der Gabe" },
+    { n: "Diazepam", b: "Valium", g: "Benzodiazepin", t: ["anfall"],
+      u: ["Angst, Unruhe", "Krampfanfall (auch als Rektiole)", "Muskelverspannungen", "Alkoholentzug"],
+      w: "GABA-Verstärker mit sehr langer Wirkdauer (aktive Abbauprodukte)",
+      nw: ["Lang anhaltende Müdigkeit („Hangover“)", "Sturzgefahr", "Abhängigkeit"],
+      p: ["Bei älteren Menschen Anreicherung (Kumulation) beachten", "Rektiole beim Krampfanfall", "Atmung überwachen"],
+      uq: "Krampfanfall (auch als Rektiole)", nq: "Hangover am nächsten Tag", pq: "Bei Älteren Kumulation beachten" },
+    { n: "Midazolam", b: "Dormicum", g: "Benzodiazepin", t: ["anfall"],
+      u: ["Sedierung bei Eingriffen", "Krampfanfall (bukkal/nasal)", "Palliative Sedierung"],
+      w: "Kurzwirksames Benzodiazepin mit schnellem Wirkeintritt",
+      nw: ["Atemdepression", "Blutdruckabfall", "Erinnerungslücken (Amnesie)"],
+      p: ["Atmung und Sättigung überwachen", "Antidot Flumazenil bereithalten", "Bukkal: in die Wangentasche geben"],
+      uq: "Sedierung vor Eingriffen", nq: "Erinnerungslücken (Amnesie)", pq: "Antidot Flumazenil bereithalten" },
+    { n: "Zopiclon", b: "Ximovan", g: "Z-Substanz (Schlafmittel)",
+      u: ["Kurzfristig bei Schlafstörungen"],
+      w: "Wirkt wie Benzodiazepine am GABA-Rezeptor, aber kürzer",
+      nw: ["Bitterer Geschmack", "Nächtliche Sturzgefahr", "Abhängigkeit"],
+      p: ["Erst direkt vor dem Zubettgehen", "Nur 2–4 Wochen", "Nachts Sturzgefahr – Klingel und Licht bereitstellen"],
+      uq: "Kurzfristig bei Einschlafstörungen", nq: "Bitterer Geschmack", pq: "Erst direkt vor dem Zubettgehen geben" },
+    { n: "Melperon", b: "Eunerpan", g: "Niederpotentes Neuroleptikum",
+      u: ["Unruhe und Schlafstörungen im Alter", "Verwirrtheit"],
+      w: "Beruhigt über Dopamin- und Serotonin-Blockade, kaum anticholinerg",
+      nw: ["Müdigkeit", "Blutdruckabfall", "Selten Bewegungsstörungen"],
+      p: ["Häufig in der Geriatrie bei Unruhe", "Sturzgefahr durch Blutdruckabfall", "Wirkung und Schlaf dokumentieren"],
+      uq: "Unruhe und Schlafstörung im Alter", nq: "Blutdruckabfall", pq: "Sturzgefahr durch Blutdruckabfall" },
+    { n: "Pipamperon", b: "Dipiperon", g: "Niederpotentes Neuroleptikum",
+      u: ["Schlafstörungen und Unruhe (v. a. im Alter)", "Aggressives Verhalten bei Demenz"],
+      w: "Blockiert v. a. Serotonin- und Dopamin-Rezeptoren → beruhigend",
+      nw: ["Müdigkeit", "Schwindel, Blutdruckabfall", "Bewegungsstörungen (selten)"],
+      p: ["Saft genau abmessen", "Sturzgefahr", "Auf Bewegungsstörungen achten"],
+      uq: "Unruhe bei Demenz", nq: "Müdigkeit und Schwindel", pq: "Saft genau abmessen" }
+  ]
+},
+{
+  id: "psyche", title: "Psychopharmaka", sub: "Antidepressiva & Neuroleptika", icon: "🧠", color: "#A85AB0", dark: "#874591", area: "psyche",
+  drugs: [
+    { n: "Sertralin", b: "Zoloft", g: "SSRI (Antidepressivum)",
+      u: ["Depression", "Angst- und Zwangsstörungen", "PTBS"],
+      w: "Hemmt die Wiederaufnahme von Serotonin → mehr Serotonin im synaptischen Spalt",
+      nw: ["Übelkeit zu Beginn", "Unruhe, Schlafstörungen", "Sexuelle Funktionsstörungen", "Hyponatriämie (ältere Menschen)"],
+      p: ["Stimmungsaufhellung erst nach 2–4 Wochen", "Anfangs auf Unruhe und Suizidgedanken achten", "Nicht abrupt absetzen"],
+      uq: "Depression und Angststörung", nq: "Sexuelle Funktionsstörungen", pq: "Wirkung erst nach 2–4 Wochen" },
+    { n: "Mirtazapin", b: "Remergil", g: "NaSSA (Antidepressivum)",
+      u: ["Depression mit Schlafstörungen", "Appetitlosigkeit"],
+      w: "Blockiert α2- und Histamin-Rezeptoren → mehr Noradrenalin und Serotonin, stark schlaffördernd",
+      nw: ["Müdigkeit", "Gewichtszunahme, mehr Appetit", "Mundtrockenheit"],
+      p: ["Abends geben", "Gewicht kontrollieren", "Stimmung bessert sich nach 2–4 Wochen"],
+      uq: "Depression mit Schlafstörungen", nq: "Gewichtszunahme", pq: "Abends geben (macht müde)" },
+    { n: "Amitriptylin", b: "Saroten", g: "Trizyklisches Antidepressivum", t: ["schmerz", "neuropath"],
+      u: ["Depression", "Neuropathische und chronische Schmerzen", "Schlafstörungen"],
+      w: "Hemmt die Wiederaufnahme von Serotonin und Noradrenalin; stark anticholinerg",
+      nw: ["Mundtrockenheit, Obstipation, Harnverhalt", "Herzrhythmusstörungen", "Müdigkeit, Delir bei Älteren"],
+      p: ["Auf Harnverhalt und Obstipation achten", "Sturzgefahr", "Für ältere Menschen ungünstig (PRISCUS-Liste)"],
+      uq: "Depression und Nervenschmerzen", nq: "Mundtrockenheit, Obstipation, Harnverhalt", pq: "Auf Harnverhalt achten" },
+    { n: "Haloperidol", b: "Haldol", g: "Hochpotentes Neuroleptikum",
+      u: ["Akute Psychose", "Delir", "Schwere Unruhe", "Übelkeit (palliativ, niedrig dosiert)"],
+      w: "Blockiert stark Dopamin-D2-Rezeptoren → antipsychotisch",
+      nw: ["Extrapyramidale Störungen (Frühdyskinesien, Parkinsonoid)", "QT-Zeit-Verlängerung", "Malignes neuroleptisches Syndrom (selten)"],
+      p: ["Auf Bewegungsstörungen achten", "Fieber + Muskelsteife → sofort Arzt", "Nicht bei Parkinson oder Lewy-Body-Demenz"],
+      uq: "Akute Psychose und Delir", nq: "Extrapyramidale Bewegungsstörungen", pq: "Bei Fieber und Muskelsteife sofort Arzt" },
+    { n: "Risperidon", b: "Risperdal", g: "Atypisches Neuroleptikum",
+      u: ["Schizophrenie", "Aggressivität bei Demenz (kurzzeitig)", "Manie"],
+      w: "Blockiert Dopamin- und Serotonin-Rezeptoren",
+      nw: ["Prolaktinanstieg", "Gewichtszunahme", "Bewegungsstörungen (dosisabhängig)"],
+      p: ["Bei Demenz nur kurzzeitig (erhöhtes Schlaganfallrisiko)", "Gewicht kontrollieren", "Bewegungsstörungen beobachten"],
+      uq: "Schizophrenie", nq: "Prolaktinanstieg", pq: "Bei Demenz nur kurzzeitig – Schlaganfallrisiko" },
+    { n: "Quetiapin", b: "Seroquel", g: "Atypisches Neuroleptikum",
+      u: ["Schizophrenie", "Bipolare Störung", "Psychose bei Parkinson (off-label)"],
+      w: "Blockiert Dopamin-, Serotonin- und Histamin-Rezeptoren → antipsychotisch und beruhigend",
+      nw: ["Müdigkeit", "Blutdruckabfall beim Aufstehen", "Gewichtszunahme, Blutzuckeranstieg"],
+      p: ["Langsam aufstehen lassen", "Gewicht und BZ kontrollieren", "Retard- und schnell freisetzende Form nicht verwechseln"],
+      uq: "Bipolare Störung und Psychosen", nq: "Blutdruckabfall beim Aufstehen", pq: "Langsam aufstehen lassen" },
+    { n: "Lithium", b: "Quilonum", g: "Stimmungsstabilisierer",
+      u: ["Bipolare Störung (Phasenprophylaxe)", "Therapieresistente Depression"],
+      w: "Stabilisiert die Stimmung und senkt das Suizidrisiko",
+      nw: ["Feinschlägiger Tremor", "Durst, viel Urin", "Schilddrüsenunterfunktion", "Vergiftung bei hohem Spiegel"],
+      p: ["Regelmäßige Spiegelkontrollen (enger Bereich)", "Durchfall, Fieber, wenig Trinken → Spiegel steigt", "Keine NSAR ohne Rücksprache"],
+      uq: "Phasenprophylaxe bei bipolarer Störung", nq: "Feinschlägiger Tremor", pq: "Regelmäßige Spiegelkontrollen" }
+  ]
+},
+{
+  id: "neuro", title: "Nervensystem", sub: "Epilepsie, Parkinson, Demenz", icon: "⚙️", color: "#C98432", dark: "#A66A22", area: "neuro",
+  drugs: [
+    { n: "Levetiracetam", b: "Keppra", g: "Antiepileptikum", t: ["anfall"],
+      u: ["Epilepsie (fokale und generalisierte Anfälle)"],
+      w: "Bindet an ein Protein der Nervenendigung (SV2A) → hemmt die Ausbreitung von Anfällen",
+      nw: ["Müdigkeit", "Reizbarkeit, Stimmungsveränderungen", "Schwindel"],
+      p: ["Zu festen Zeiten einnehmen", "Auf Wesensveränderungen achten", "Nicht abrupt absetzen"],
+      uq: "Epilepsie", nq: "Reizbarkeit und Stimmungsveränderungen", pq: "Auf Wesensveränderungen achten" },
+    { n: "Valproinsäure", b: "Ergenyl", g: "Antiepileptikum", t: ["anfall", "psyche"],
+      u: ["Epilepsie", "Bipolare Störung"],
+      w: "Erhöht GABA und blockiert Natriumkanäle",
+      nw: ["Leberschädigung", "Gewichtszunahme, Haarausfall", "Fehlbildungen in der Schwangerschaft"],
+      p: ["Leberwerte kontrollieren", "Strenge Verhütung bei Frauen im gebärfähigen Alter", "Spiegelkontrollen"],
+      uq: "Epilepsie und bipolare Störung", nq: "Fehlbildungen in der Schwangerschaft", pq: "Leberwerte regelmäßig kontrollieren" },
+    { n: "Lamotrigin", b: "Lamictal", g: "Antiepileptikum", t: ["anfall", "psyche"],
+      u: ["Epilepsie", "Vorbeugung bipolarer Depression"],
+      w: "Blockiert Natriumkanäle → stabilisiert die Nervenzellmembran",
+      nw: ["Hautausschlag bis Stevens-Johnson-Syndrom", "Schwindel, Doppelbilder", "Kopfschmerz"],
+      p: ["Sehr langsam eindosieren", "Hautausschlag → sofort Arzt", "Auf Doppelbilder und Schwindel achten"],
+      uq: "Epilepsie", nq: "Schwerer Hautausschlag (Stevens-Johnson)", pq: "Bei Hautausschlag sofort Arzt informieren" },
+    { n: "Levodopa/Benserazid", b: "Madopar", g: "Parkinsonmittel (Dopamin-Vorstufe)",
+      u: ["Morbus Parkinson", "Restless-Legs-Syndrom"],
+      w: "L-Dopa wird im Gehirn zu Dopamin; Benserazid verhindert den Abbau außerhalb des Gehirns",
+      nw: ["Übelkeit", "Überbewegungen (Dyskinesien)", "Halluzinationen, Verwirrtheit"],
+      p: ["Einnahmezeiten exakt einhalten (Wirkschwankungen)", "30 min vor oder 1 h nach dem Essen; eiweißreiche Mahlzeiten vorher meiden", "Nie abrupt absetzen"],
+      uq: "Morbus Parkinson", nq: "Überbewegungen (Dyskinesien)", pq: "Einnahmezeiten exakt einhalten" },
+    { n: "Pregabalin", b: "Lyrica", g: "Antikonvulsivum (Nervenschmerz)", t: ["neuropath", "psyche", "anfall"],
+      u: ["Neuropathische Schmerzen", "Generalisierte Angststörung", "Epilepsie (Zusatztherapie)"],
+      w: "Bindet an Calciumkanäle der Nervenzellen → weniger erregende Botenstoffe",
+      nw: ["Schwindel, Benommenheit", "Gewichtszunahme, Ödeme", "Missbrauchspotenzial"],
+      p: ["Sturzgefahr", "Nicht abrupt absetzen", "Auf missbräuchliche Einnahme achten"],
+      uq: "Neuropathische Schmerzen", nq: "Missbrauchspotenzial", pq: "Auf missbräuchliche Einnahme achten" },
+    { n: "Donepezil", b: "Aricept", g: "Antidementivum (Cholinesterase-Hemmer)",
+      u: ["Leichte bis mittelschwere Alzheimer-Demenz"],
+      w: "Hemmt den Abbau von Acetylcholin → Gedächtnis und Alltagsfähigkeit bleiben länger erhalten",
+      nw: ["Übelkeit, Durchfall", "Bradykardie, Schwindel", "Ungewöhnliche Träume, Albträume, Schlafstörungen"],
+      p: ["Abends vor dem Schlafengehen geben", "Puls kontrollieren (Bradykardie)", "Gewicht kontrollieren (Appetitverlust)"],
+      uq: "Alzheimer-Demenz", nq: "Ungewöhnliche Träume und Albträume", pq: "Puls kontrollieren (Bradykardie)" }
+  ]
+},
+{
+  id: "hormon", title: "Hormone & Immunsystem", sub: "Kortison, Schilddrüse, Knochen", icon: "🧪", color: "#3E9A86", dark: "#2E7A69", area: "hormon",
+  drugs: [
+    { n: "Prednisolon", b: "Decortin H", g: "Glukokortikoid", t: ["atem", "allergie"],
+      u: ["Entzündliche und rheumatische Erkrankungen", "Asthma-/COPD-Verschlechterung", "Allergien, Autoimmunerkrankungen"],
+      w: "Hemmt Entzündung und Immunreaktion stark",
+      nw: ["Blutzuckeranstieg", "Osteoporose, Magengeschwür", "Infektanfälligkeit, Cushing-Zeichen (Langzeit)"],
+      p: ["Morgens einnehmen (natürlicher Kortisolrhythmus)", "Blutzucker kontrollieren", "Nach längerer Gabe ausschleichen, nicht abrupt absetzen"],
+      uq: "Entzündliche und rheumatische Erkrankungen", nq: "Blutzuckeranstieg", pq: "Morgens einnehmen" },
+    { n: "Dexamethason", b: "Fortecortin", g: "Glukokortikoid", t: ["allergie"],
+      u: ["Hirnödem", "Übelkeit bei Chemotherapie", "Schwere Allergie, Palliativmedizin"],
+      w: "Sehr stark wirksames Glukokortikoid ohne Salzwirkung",
+      nw: ["Blutzuckeranstieg", "Unruhe, Schlafstörungen", "Infektanfälligkeit"],
+      p: ["Morgens geben (sonst Schlafstörungen)", "Blutzucker kontrollieren", "Auf Mundsoor achten"],
+      uq: "Hirnödem", nq: "Unruhe und Schlafstörungen", pq: "Möglichst morgens geben" },
+    { n: "Hydrocortison", b: "Hydrocortison (generisch)", g: "Glukokortikoid",
+      u: ["Nebennierenrinden-Insuffizienz (Ersatz)", "Addison-Krise"],
+      w: "Entspricht dem körpereigenen Kortisol",
+      nw: ["Cushing-Zeichen bei Überdosierung", "Ödeme (Salzwirkung)", "Blutzuckeranstieg"],
+      p: ["Bei Fieber, Stress, OP Dosis nach Anordnung erhöhen", "Notfallausweis", "Morgens die höhere Dosis"],
+      uq: "Ersatz bei Nebenniereninsuffizienz", nq: "Ödeme durch Salzwirkung", pq: "Bei Fieber oder OP Dosis anpassen" },
+    { n: "Levothyroxin", b: "L-Thyroxin / Euthyrox", g: "Schilddrüsenhormon",
+      u: ["Schilddrüsenunterfunktion", "Nach Schilddrüsen-OP", "Struma"],
+      w: "Ersetzt das Schilddrüsenhormon T4",
+      nw: ["Bei Überdosierung Herzrasen, Unruhe, Schwitzen", "Gewichtsverlust", "Schlafstörungen"],
+      p: ["Nüchtern 30 min vor dem Frühstück mit Wasser", "Abstand zu Calcium, Eisen und Kaffee", "Puls beobachten"],
+      uq: "Schilddrüsenunterfunktion", nq: "Herzrasen und Schwitzen bei Überdosierung", pq: "Nüchtern 30 Minuten vor dem Frühstück" },
+    { n: "Thiamazol", b: "Thiamazol Henning", g: "Thyreostatikum",
+      u: ["Schilddrüsenüberfunktion", "Schutz vor jodhaltigem Kontrastmittel bei Risiko"],
+      w: "Hemmt die Bildung von Schilddrüsenhormonen",
+      nw: ["Agranulozytose (selten)", "Hautausschlag", "Leberschädigung"],
+      p: ["Fieber/Halsschmerzen → sofort Blutbild", "Puls und Gewicht beobachten", "Regelmäßige Blutbildkontrollen"],
+      uq: "Schilddrüsenüberfunktion", nq: "Agranulozytose", pq: "Bei Fieber und Halsschmerzen Blutbild" },
+    { n: "Alendronsäure", b: "Fosamax", g: "Bisphosphonat",
+      u: ["Osteoporose"],
+      w: "Hemmt die knochenabbauenden Zellen (Osteoklasten)",
+      nw: ["Speiseröhrenentzündung", "Kieferosteonekrose (selten)", "Muskel- und Knochenschmerzen"],
+      p: ["1× wöchentlich morgens nüchtern mit großem Glas Leitungswasser (kein Mineralwasser)", "Danach 30 min aufrecht bleiben, nichts essen", "Vor Zahnbehandlungen angeben"],
+      uq: "Osteoporose", nq: "Kieferosteonekrose", pq: "Nach Einnahme 30 Minuten aufrecht bleiben" },
+    { n: "Methotrexat", b: "Lantarel", g: "Immunsuppressivum (Basistherapeutikum)", t: ["schmerz"],
+      u: ["Rheumatoide Arthritis", "Psoriasis", "Hochdosiert in der Krebstherapie"],
+      w: "Hemmt den Folsäurestoffwechsel → bremst Zellteilung und Immunsystem",
+      nw: ["Blutbildveränderungen", "Mundschleimhautentzündung", "Leber- und Lungenschäden"],
+      p: ["Bei Rheuma nur 1× pro WOCHE – Verwechslung lebensgefährlich!", "Folsäure am Folgetag nach Anordnung", "Schutzmaßnahmen bei Zubereitung und Entsorgung"],
+      uq: "Rheumatoide Arthritis (Basistherapie)", nq: "Mundschleimhautentzündung", pq: "Bei Rheuma nur einmal pro Woche!" }
+  ]
+},
+{
+  id: "notfall", title: "Notfall", sub: "Notfall- & Antidot-Medikamente", icon: "🚑", color: "#E0474C", dark: "#BD3238", area: "notfall",
+  drugs: [
+    { n: "Adrenalin", b: "Suprarenin / Fastjekt", g: "Katecholamin", t: ["allergie", "herz"],
+      u: ["Reanimation", "Anaphylaktischer Schock"],
+      w: "Stimuliert α- und β-Rezeptoren → Gefäße verengen sich, Herz schlägt stärker und schneller, Bronchien weiten sich",
+      nw: ["Tachykardie, Herzrhythmusstörungen", "Blutdruckanstieg", "Unruhe, Zittern"],
+      p: ["Anaphylaxie: i.m. in den äußeren Oberschenkel (Autoinjektor)", "Reanimation: nach Algorithmus alle 3–5 min", "Monitoring"],
+      uq: "Anaphylaktischer Schock und Reanimation", nq: "Tachykardie und Rhythmusstörungen", pq: "Bei Anaphylaxie i.m. in den Oberschenkel" },
+    { n: "Atropin", b: "Atropinsulfat", g: "Parasympatholytikum", t: ["herz"],
+      u: ["Symptomatische Bradykardie", "Vergiftung mit Organophosphaten", "Speichelreduktion vor Narkose"],
+      w: "Blockiert Acetylcholin-Rezeptoren → Herzfrequenz steigt, Sekrete nehmen ab",
+      nw: ["Tachykardie", "Mundtrockenheit", "Pupillenerweiterung, Harnverhalt"],
+      p: ["Monitoring", "Nicht bei Engwinkelglaukom", "Auf Harnverhalt achten"],
+      uq: "Zu langsamer Herzschlag (Bradykardie)", nq: "Pupillenerweiterung", pq: "Monitoring von Puls und EKG" },
+    { n: "Amiodaron", b: "Cordarex", g: "Antiarrhythmikum", t: ["herz"],
+      u: ["Kammerflimmern bei Reanimation", "Vorhofflimmern, Tachykardien"],
+      w: "Verlängert die Erregungsrückbildung am Herzen → stabilisiert den Rhythmus",
+      nw: ["Schilddrüsenstörungen (enthält Jod)", "Phototoxizität, Hautverfärbung", "Lungenfibrose, QT-Verlängerung"],
+      p: ["Schilddrüse, Leber und Lunge kontrollieren", "Konsequenter Sonnenschutz", "i.v. nur mit Glucose 5 % verdünnen, Dauerinfusion über ZVK"],
+      uq: "Kammerflimmern und schwere Rhythmusstörungen", nq: "Schilddrüsenstörungen (Jod)", pq: "Nur in Glucose 5 % verdünnen" },
+    { n: "Urapidil", b: "Ebrantil", g: "Alpha-1-Blocker (Blutdruck)", t: ["herz"],
+      u: ["Hypertensiver Notfall", "Blutdrucksenkung bei Operationen"],
+      w: "Blockiert α1-Rezeptoren der Gefäße → Gefäße weiten sich, Blutdruck sinkt",
+      nw: ["Blutdruckabfall", "Schwindel, Kopfschmerz", "Übelkeit"],
+      p: ["Langsam i.v. und Blutdruck engmaschig messen", "Blutdruck nicht zu schnell senken", "Patient sollte liegen"],
+      uq: "Hypertensiver Notfall", nq: "Blutdruckabfall", pq: "Blutdruck engmaschig messen" },
+    { n: "Glucose 40 %", b: "Glucose 40 % Infusionslösung", g: "Hochprozentige Glucoselösung", t: ["diabetes"],
+      u: ["Schwere Unterzuckerung"],
+      w: "Hebt den Blutzucker sofort an",
+      nw: ["Venenreizung, Gewebsschaden bei Paravasat", "Hyperglykämie bei Überdosierung"],
+      p: ["Nur über sicher liegenden venösen Zugang", "Mit laufender Infusion nachspülen", "Blutzucker nach Gabe kontrollieren"],
+      uq: "Schwere Unterzuckerung", nq: "Gewebsschaden bei Paravasat", pq: "Nur über sicher liegenden Zugang geben" },
+    { n: "Flumazenil", b: "Anexate", g: "Benzodiazepin-Antagonist (Antidot)", t: ["antidot", "psyche"],
+      u: ["Aufhebung von Benzodiazepin-Wirkung oder -Überdosierung"],
+      w: "Verdrängt Benzodiazepine vom GABA-Rezeptor",
+      nw: ["Krampfanfälle (v. a. bei Abhängigen)", "Entzugssymptome, Unruhe", "Erneute Sedierung nach Wirkende"],
+      p: ["Nachbeobachten (kurze Wirkdauer)", "Atmung überwachen", "Langsam titrieren"],
+      uq: "Benzodiazepin-Überdosierung", nq: "Erneute Sedierung nach Wirkende", pq: "Nachbeobachten – wirkt kürzer als das Benzodiazepin" },
+    { n: "Clemastin", b: "Tavegil", g: "Antihistaminikum (1. Generation)", t: ["allergie"],
+      u: ["Akute allergische Reaktionen", "Anaphylaxie (ergänzend)", "Juckreiz"],
+      w: "Blockiert Histamin-H1-Rezeptoren; stark sedierend",
+      nw: ["Starke Müdigkeit", "Mundtrockenheit", "Schwindel"],
+      p: ["Nicht Auto fahren", "Sturzgefahr", "Bei Anaphylaxie nur ergänzend zu Adrenalin"],
+      uq: "Akute allergische Reaktionen", nq: "Starke Müdigkeit", pq: "Bei Anaphylaxie nur ergänzend zu Adrenalin" }
+  ]
+},
+{
+  id: "weitere", title: "Weitere Wichtige", sub: "Gicht, Prostata, Mangel, Allergie", icon: "⭐", color: "#5B7894", dark: "#465F77", area: "sonst",
+  drugs: [
+    { n: "Allopurinol", b: "Zyloric", g: "Gichtmittel (Urikostatikum)",
+      u: ["Gicht (Dauertherapie)", "Erhöhte Harnsäure"],
+      w: "Hemmt die Xanthinoxidase → weniger Harnsäure",
+      nw: ["Hautausschlag (selten schwer)", "Gichtanfall zu Therapiebeginn", "Magen-Darm-Beschwerden"],
+      p: ["Nach dem Essen mit viel Flüssigkeit", "Nicht im akuten Gichtanfall beginnen", "Hautausschlag → Arzt informieren"],
+      uq: "Gicht-Dauertherapie", nq: "Gichtanfall zu Therapiebeginn", pq: "Nach dem Essen mit viel Flüssigkeit" },
+    { n: "Tamsulosin", b: "Alna", g: "Alpha-1-Blocker (Prostata)",
+      u: ["Gutartige Prostatavergrößerung (Beschwerden beim Wasserlassen)"],
+      w: "Entspannt die Muskulatur von Prostata und Blasenhals → besserer Harnfluss",
+      nw: ["Schwindel, Blutdruckabfall beim Aufstehen", "Retrograde Ejakulation", "Verstopfte Nase"],
+      p: ["Nach dem Frühstück im Sitzen oder Stehen einnehmen", "Langsam aufstehen", "Vor Grauer-Star-OP angeben (Floppy-Iris)"],
+      uq: "Gutartige Prostatavergrößerung", nq: "Retrograde Ejakulation", pq: "Vor einer Grauer-Star-OP angeben" },
+    { n: "Kaliumchlorid", b: "Kalinor retard", g: "Elektrolyt",
+      u: ["Hypokaliämie (z. B. durch Diuretika)"],
+      w: "Gleicht einen Kaliummangel aus",
+      nw: ["Magen-Darm-Reizung", "Hyperkaliämie bei Überdosierung (Rhythmusstörungen)"],
+      p: ["Niemals unverdünnt i.v. (Herzstillstand!)", "Mit viel Flüssigkeit zum Essen", "Kaliumwerte kontrollieren"],
+      uq: "Kaliummangel", nq: "Hyperkaliämie bei Überdosierung", pq: "Niemals unverdünnt i.v. geben" },
+    { n: "Eisen(II)-sulfat", b: "ferro sanol duodenal", g: "Eisenpräparat",
+      u: ["Eisenmangelanämie"],
+      w: "Füllt die Eisenspeicher auf → Blutbildung",
+      nw: ["Schwarzer Stuhl (harmlos)", "Verstopfung", "Magen-Darm-Beschwerden"],
+      p: ["Nüchtern, nicht mit Milch, Tee oder Kaffee", "Über dunklen Stuhl aufklären (im Zweifel Teerstuhl abklären)", "Abstand zu L-Thyroxin und Antibiotika"],
+      uq: "Eisenmangelanämie", nq: "Schwarzer Stuhl (harmlos)", pq: "Nicht mit Milch, Tee oder Kaffee einnehmen" },
+    { n: "Cetirizin", b: "Zyrtec", g: "Antihistaminikum (2. Generation)", t: ["allergie"],
+      u: ["Heuschnupfen", "Nesselsucht (Urtikaria)", "Allergischer Juckreiz"],
+      w: "Blockiert Histamin-H1-Rezeptoren, macht kaum müde",
+      nw: ["Leichte Müdigkeit", "Kopfschmerzen", "Mundtrockenheit"],
+      p: ["Bei Müdigkeit abends einnehmen", "Bei Niereninsuffizienz Dosis anpassen", "Kaum Wechselwirkungen"],
+      uq: "Heuschnupfen", nq: "Leichte Müdigkeit", pq: "Bei Müdigkeit abends einnehmen" },
+    { n: "Colecalciferol", b: "Dekristol / Vigantol", g: "Vitamin D3", t: ["hormon"],
+      u: ["Vitamin-D-Mangel", "Basistherapie bei Osteoporose", "Sturz- und Frakturprophylaxe im Alter"],
+      w: "Fördert die Calciumaufnahme im Darm und den Einbau in die Knochen",
+      nw: ["Hyperkalzämie bei Überdosierung (Übelkeit, Durst, Nierensteine)"],
+      p: ["Hochdosis-Präparate (z. B. 20.000 I.E.) nur wöchentlich – Verwechslung vermeiden", "Zu einer fetthaltigen Mahlzeit", "Calciumzufuhr beachten"],
+      uq: "Vitamin-D-Mangel", nq: "Hyperkalzämie bei Überdosierung", pq: "Hochdosis-Präparate nicht täglich geben" }
+  ]
+}
+];
+
+// ===== Lern-Engine (ohne DOM, testbar) =====
+const ALL = [];
+const BY_ID = {};
+function slug(s) {
+  return s.toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+function chunkSizes(n) {
+  if (n <= 4) return [n];
+  const k = Math.ceil(n / 4), base = Math.floor(n / k), extra = n % k;
+  return Array.from({ length: k }, (_, i) => base + (i < extra ? 1 : 0));
+}
+UNITS.forEach((u) => {
+  u.drugs.forEach((d) => {
+    d.id = slug(d.n); d.unit = u.id; d.tags = [u.area].concat(d.t || []);
+    ALL.push(d); BY_ID[d.id] = d;
+  });
+  const sizes = chunkSizes(u.drugs.length);
+  let i = 0;
+  u.nodes = sizes.map((s, li) => {
+    const ids = u.drugs.slice(i, i + s).map((d) => d.id); i += s;
+    return { id: u.id + "-L" + (li + 1), unit: u.id, type: "lesson", title: "Lektion " + (li + 1), drugIds: ids };
+  });
+  u.nodes.push({ id: u.id + "-R", unit: u.id, type: "review", title: "Einheitentest", drugIds: u.drugs.map((d) => d.id) });
+});
+const NODES = UNITS.flatMap((u) => u.nodes);
+const NODE_BY_ID = Object.fromEntries(NODES.map((n) => [n.id, n]));
+
+// --- Zufall ---
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+// --- Schutz vor mehrdeutigen Antworten ---
+// Ablenker dürfen keine Wortstämme mit dem Ziel-Medikament teilen (sonst könnten sie ebenfalls stimmen).
+const SYN = { verstopfung: "obstipation", unterzuckerung: "hypoglykaemie", austrocknung: "exsikkose", herzrasen: "tachykardie", tremor: "zittern", nervenschmerzen: "neuropathische" };
+const STOP = new Set(["achte", "beoba", "kontr", "regel", "patie", "einne", "nehme", "geben", "wirkt", "wirku", "nicht", "immer", "sofor", "infor", "selte", "beson", "dauer", "zusam", "möglic", "mögli", "ältere", "älter", "mensc", "gefah", "erhöh", "starke", "stark", "schne", "lassen", "lasse", "durch", "werde", "einer", "einem", "eines", "unter", "sowie", "bei", "nach", "kurzf", "langs", "überw", "zeich", "zusät", "zusät", "ausre", "sicher", "siche", "gleic", "therap", "thera", "behan", "akute", "akuter", "schwe", "leich", "mäßig", "häufi", "dosis", "dosie", "anord", "nachb", "beach", "melde", "verme", "vorhe", "vorsi"]);
+function norm(s) { return s.toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss"); }
+const STOPN = new Set([...STOP].map((x) => norm(x).slice(0, 5)));
+function stems(text) {
+  const out = new Set();
+  (norm(text).match(/[a-z]+/g) || []).forEach((w) => {
+    if (SYN[w]) w = norm(SYN[w]);
+    if (w.length < 5) return;
+    const p = w.slice(0, 5);
+    if (!STOPN.has(p)) out.add(p);
+  });
+  return out;
+}
+function fullText(d) { return [d.n, d.g].concat(d.u, [d.w], d.nw, d.p, [d.uq, d.nq, d.pq]).join(" "); }
+const STEM_CACHE = {};
+function drugStems(d) { return STEM_CACHE[d.id] || (STEM_CACHE[d.id] = stems(fullText(d))); }
+function conflicts(target, text) { const t = drugStems(target); for (const s of stems(text)) if (t.has(s)) return true; return false; }
+function shareTag(a, b) { return a.tags.some((t) => b.tags.includes(t)); }
+
+// Liefert bis zu n eindeutige Ablenker-Werte für ein Feld
+function distractorValues(target, getter, n, opts = {}) {
+  const right = getter(target);
+  const seen = new Set([right]);
+  const pool = shuffle(ALL).filter((d) => d !== target && d.g !== target.g && !shareTag(d, target));
+  const out = [];
+  for (const d of pool) {
+    const v = getter(d);
+    if (!v || seen.has(v)) continue;
+    if (!opts.noConflict && conflicts(target, v)) continue;
+    if (opts.extra && !opts.extra(d)) continue;
+    seen.add(v); out.push(v);
+    if (out.length >= n) break;
+  }
+  return out;
+}
+
+function mc(d, kind, prompt, right, wrongs, explain) {
+  return { type: "mc", kind, drugId: d.id, prompt, options: shuffle([right].concat(wrongs)), answer: right, explain };
+}
+
+const GEN = {
+  use(d) {
+    return mc(d, "use", "Wofür wird <b>" + d.n + "</b> eingesetzt?", d.uq, distractorValues(d, (x) => x.uq, 3), d.n + " → " + d.u.join(", "));
+  },
+  group(d) {
+    return mc(d, "group", "Zu welcher Gruppe gehört <b>" + d.n + "</b>?", d.g, distractorValues(d, (x) => x.g, 3), "Merke: " + d.n + " (" + d.b + ") → " + d.g);
+  },
+  nameByGroup(d) {
+    const w = distractorValues(d, (x) => x.n, 3, { noConflict: true });
+    return mc(d, "nameByGroup", "Welcher Wirkstoff gehört zur Gruppe <b>" + d.g + "</b>?", d.n, w, "Merke: " + d.n + " (" + d.b + ") → " + d.g);
+  },
+  nameByUse(d) {
+    // Ablenker-Medikamente, deren eigene Texte nicht zur gesuchten Indikation passen
+    const uqStems = stems(d.uq);
+    const w = distractorValues(d, (x) => x.n, 3, { noConflict: true, extra: (x) => ![...uqStems].some((s) => drugStems(x).has(s)) });
+    return mc(d, "nameByUse", "Welches Medikament setzt man ein bei: <b>" + d.uq + "</b>?", d.n, w, d.n + " → " + d.u.join(", "));
+  },
+  nw(d) {
+    return mc(d, "nw", "Welche Nebenwirkung ist typisch für <b>" + d.n + "</b>?", d.nq, distractorValues(d, (x) => x.nq, 3), "Typisch für " + d.n + ": " + d.nw.join(", "));
+  },
+  pflege(d) {
+    return mc(d, "pflege", "Worauf achtest du in der Pflege bei <b>" + d.n + "</b>?", d.pq, distractorValues(d, (x) => x.pq, 3), "Pflege bei " + d.n + ": " + d.p.join(" · "));
+  },
+  wirkung(d) {
+    return mc(d, "wirkung", "Wie wirkt <b>" + d.n + "</b>?", d.w, distractorValues(d, (x) => x.w, 2), d.n + ": " + d.w);
+  },
+  tf(d) {
+    const variants = [
+      { s: (v) => "<b>" + d.n + "</b> gehört zur Gruppe: " + v, right: d.g, get: (x) => x.g },
+      { s: (v) => "<b>" + d.n + "</b> setzt man ein bei: " + v, right: d.uq, get: (x) => x.uq },
+      { s: (v) => "Eine typische Nebenwirkung von <b>" + d.n + "</b>: " + v, right: d.nq, get: (x) => x.nq }
+    ];
+    const v = pick(variants);
+    const truth = Math.random() < 0.5;
+    let shown = v.right;
+    if (!truth) { const w = distractorValues(d, v.get, 1); if (w.length) shown = w[0]; }
+    const isTrue = shown === v.right;
+    return { type: "tf", kind: "tf", drugId: d.id, prompt: v.s(shown), answer: isTrue, explain: isTrue ? "Stimmt!" : "Richtig wäre: " + v.right };
+  },
+  suffix(d) {
+    const sufs = GROUP_SUFFIX[d.g];
+    if (!sufs) return null;
+    const suf = sufs.slice().sort((a, b) => b.length - a.length).find((s) => norm(d.n).endsWith(norm(s)));
+    if (!suf) return null;
+    const wrongs = shuffle(Object.keys(GROUP_SUFFIX).filter((g) => g !== d.g)).slice(0, 3);
+    return { type: "mc", kind: "suffix", drugId: d.id, prompt: "Endungs-Detektiv 🔍<br>Ein Wirkstoff endet auf <b>„-" + suf + "“</b>. Zu welcher Gruppe gehört er?", options: shuffle([d.g].concat(wrongs)), answer: d.g, explain: "-" + suf + " = " + d.g + " (z. B. " + d.n + ")" };
+  }
+};
+
+function genMatch(drugs) {
+  drugs = drugs.slice(0, 4);
+  if (drugs.length < 2) return null;
+  const uniq = (f) => new Set(drugs.map(f)).size === drugs.length;
+  let key, label;
+  const opts = [];
+  if (uniq((d) => d.g)) opts.push(["g", "Gruppe"]);
+  if (uniq((d) => d.uq)) opts.push(["uq", "Einsatz"]);
+  if (uniq((d) => d.b)) opts.push(["b", "Handelsname"]);
+  if (!opts.length) return null;
+  [key, label] = pick(opts);
+  return { type: "match", kind: "match", label, drugIds: drugs.map((d) => d.id), pairs: drugs.map((d) => [d.n, d[key]]) };
+}
+
+const KINDS_PRACTICE = ["use", "group", "nameByGroup", "nameByUse", "nw", "pflege", "wirkung", "tf"];
+function genKind(d, kind) { const ex = GEN[kind](d); if (ex && ex.type === "mc" && ex.options.length < 3) return null; return ex; }
+function genAny(d, kinds) {
+  for (const k of shuffle(kinds)) { const ex = genKind(d, k); if (ex) return ex; }
+  return GEN.tf(d);
+}
+
+function buildLesson(node) {
+  const drugs = node.drugIds.map((id) => BY_ID[id]);
+  const steps = [];
+  if (node.type === "lesson") {
+    drugs.forEach((d) => {
+      steps.push({ type: "intro", drugId: d.id });
+      steps.push(genAny(d, ["use", "group"]));
+    });
+    const mixed = drugs.map((d) => genAny(d, ["nw", "pflege", "wirkung", "nameByUse", "nameByGroup"]));
+    const m = genMatch(drugs); if (m) mixed.push(m);
+    mixed.push(GEN.tf(pick(drugs)));
+    const sx = shuffle(drugs).map((d) => GEN.suffix(d)).find(Boolean); if (sx) mixed.push(sx);
+    return steps.concat(shuffle(mixed));
+  }
+  return buildPractice(drugs, node.type === "review" ? 11 : 9);
+}
+
+function buildPractice(drugs, count) {
+  const out = [];
+  const pool = shuffle(drugs);
+  for (let i = 0; i < count; i++) out.push(genAny(pool[i % pool.length], KINDS_PRACTICE));
+  const sx = shuffle(drugs).map((d) => GEN.suffix(d)).find(Boolean); if (sx) out.push(sx);
+  const m = genMatch(shuffle(drugs).slice(0, 4)); if (m) out.splice(Math.floor(out.length / 2), 0, m);
+  return out;
+}
+
+if (typeof module !== "undefined") module.exports = { ALL, BY_ID, UNITS, NODES, GEN, genMatch, buildLesson, buildPractice, distractorValues, conflicts, stems };
+
+// ===== PillenPfad – Oberfläche (Stil „Klinik-Frisch“) =====
+(function () {
+  const LS_KEY = "pillenpfad-v1";
+  const MAX_HEARTS = 5, REFILL_MS = 20 * 60 * 1000, DAILY_GOAL = 30;
+  const UNIT_BY_ID = Object.fromEntries(UNITS.map((u) => [u.id, u]));
+  const C = { petrol: "#0E7C7B", petrolS: "#E1F1EF", coral: "#FF6B5B", coralS: "#FFE8E4", sand: "#E9A93A", sandS: "#FCF1DC", line: "#E9E3DA", plum: "#7E62C4", plumS: "#EEE9F8" };
+  const DEFAULT = () => ({ v: 1, xp: 0, streak: 0, lastDay: null, hearts: MAX_HEARTS, heartTs: Date.now(), done: {}, ds: {}, daily: { day: null, xp: 0 }, sound: true, disc: false, lessons: 0, right: 0, wrong: 0, updated: 0 });
+
+  // ---------- Speicher ----------
+  function sanitize(o) { const d = DEFAULT(); if (!o || typeof o !== "object") return d; return Object.assign(d, o, { daily: Object.assign(d.daily, o.daily || {}), done: o.done || {}, ds: o.ds || {} }); }
+  function load() { try { const raw = localStorage.getItem(LS_KEY); if (raw) return sanitize(JSON.parse(raw)); } catch (e) {} return DEFAULT(); }
+  let S = load();
+  function save() { S.updated = Date.now(); try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {} cloudPush(); }
+
+  const cloud = { ref: null, status: "local", writing: false, pending: false, timer: null };
+  async function initCloud() {
+    try {
+      if (!window.claude || typeof window.claude.use !== "function") return;
+      const [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+      if (!db || !user) return;
+      const id = await user.id();
+      if (!id) return;
+      cloud.ref = db.doc("data/users/" + id + "/progress");
+      const snap = await Promise.race([cloud.ref.get(), new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 10000))]);
+      cloud.status = "on";
+      const remote = snap.exists ? snap.data() : null;
+      if (remote && remote.state && (remote.state.updated || 0) > (S.updated || 0)) {
+        S = sanitize(JSON.parse(JSON.stringify(remote.state)));
+        try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {}
+        if (!L) render();
+      } else if (!remote || (S.updated || 0) > ((remote.state && remote.state.updated) || 0)) {
+        cloudPush(true);
+      }
+      if (view === "profil" && !L) render();
+    } catch (e) { cloud.ref = null; cloud.status = "local"; }
+  }
+  function cloudPush(now) { if (!cloud.ref) return; clearTimeout(cloud.timer); cloud.timer = setTimeout(doPush, now ? 0 : 1200); }
+  async function doPush() {
+    if (!cloud.ref) return;
+    if (cloud.writing) { cloud.pending = true; return; }
+    cloud.writing = true;
+    try { await cloud.ref.set({ state: JSON.parse(JSON.stringify(S)) }); cloud.status = "on"; }
+    catch (e) { if (e && e.code === "unavailable") cloud.pending = true; else { cloud.ref = null; cloud.status = "local"; } }
+    cloud.writing = false;
+    if (cloud.pending) { cloud.pending = false; setTimeout(doPush, 1500 + Math.random() * 1000); }
+  }
+
+  // ---------- Hilfen ----------
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  function dayKey(d = new Date()) { const z = new Date(d.getTime() - d.getTimezoneOffset() * 60000); return z.toISOString().slice(0, 10); }
+  function yesterdayKey() { const d = new Date(); d.setDate(d.getDate() - 1); return dayKey(d); }
+  function streakNow() { return S.lastDay === dayKey() || S.lastDay === yesterdayKey() ? S.streak : 0; }
+  function doneToday() { return S.lastDay === dayKey(); }
+  function dailyXp() { return S.daily.day === dayKey() ? S.daily.xp : 0; }
+  function refillHearts() {
+    if (S.hearts >= MAX_HEARTS) { S.heartTs = Date.now(); return; }
+    const n = Math.floor((Date.now() - S.heartTs) / REFILL_MS);
+    if (n > 0) { S.hearts = Math.min(MAX_HEARTS, S.hearts + n); S.heartTs += n * REFILL_MS; if (S.hearts >= MAX_HEARTS) S.heartTs = Date.now(); }
+  }
+  function nextHeartMin() { return Math.max(1, Math.ceil((REFILL_MS - (Date.now() - S.heartTs)) / 60000)); }
+  function unlocked(node) { const u = UNIT_BY_ID[node.unit]; const i = u.nodes.indexOf(node); return i === 0 || !!S.done[u.nodes[i - 1].id]; }
+  function currentNode() { return NODES.find((n) => unlocked(n) && !S.done[n.id]) || null; }
+  function learnedCount() { return ALL.filter((d) => S.ds[d.id]).length; }
+  const soft = (hex) => hex + "1F";
+
+  // ---------- Icons ----------
+  const P = {
+    flame: '<path d="M12 2.5c.6 3.2 4.8 5 4.8 10a4.8 4.8 0 0 1-9.6 0c0-2.2 1-3.6 2.2-4.8.2 1.8 1 2.8 2.1 3 .2-3.2-.6-5.6.5-8.2z"/>',
+    star: '<path d="M12 2.8l2.8 5.8 6.3.8-4.6 4.4 1.2 6.3L12 17l-5.7 3.1 1.2-6.3L2.9 9.4l6.3-.8z"/>',
+    heart: '<path d="M12 20.5s-7.5-4.6-7.5-10.3A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.5 2.8c0 5.7-7.5 10.3-7.5 10.3z"/>',
+    home: '<path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z"/>',
+    book: '<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H18v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H18v-3"/><path d="M9 7.5h5"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1.4-3.7 4.3-5.5 7.5-5.5s6.1 1.8 7.5 5.5"/>',
+    x: '<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
+    check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    lock: '<rect x="5.5" y="10.5" width="13" height="9.5" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>',
+    trophy: '<path d="M8 4h8v5.5a4 4 0 0 1-8 0z"/><path d="M8 6H5v1.2A3 3 0 0 0 8 10.2M16 6h3v1.2a3 3 0 0 1-3 3M12 13.5V17M8.5 20h7"/>',
+    target: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8"/>',
+    bolt: '<path d="M13.5 2.5 5 13.5h6.5L10.5 21.5 19 10.5h-6.5z"/>',
+    alert: '<path d="M12 3.5 21.5 20h-19z"/><path d="M12 10v4.5M12 17.5v.3"/>',
+    care: '<path d="M12 20s-6.5-3.8-6.5-8.6A3.7 3.7 0 0 1 12 9.2a3.7 3.7 0 0 1 6.5 2.2C18.5 16.2 12 20 12 20z"/><path d="M12 3.5v4M10 5.5h4"/>',
+    clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+    sound: '<path d="M4.5 9.5v5h3.5l4.5 4v-13l-4.5 4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/>',
+    repeat: '<path d="M4 12a8 8 0 0 1 13.6-5.7L20 8.5"/><path d="M20 4v4.5h-4.5"/><path d="M20 12a8 8 0 0 1-13.6 5.7L4 15.5"/><path d="M4 20v-4.5h4.5"/>',
+    pill: '<path d="M10.5 3.5a5 5 0 0 1 7 7l-7 7a5 5 0 0 1-7-7z"/><path d="M7 7l7 7"/>',
+    medal: '<circle cx="12" cy="14.5" r="5.5"/><path d="M8.5 3.5l2 6M15.5 3.5l-2 6M12 12.5v4"/>',
+    chev: '<path d="M9.5 6l6 6-6 6"/>',
+    play: '<path d="M8 5.5v13l10.5-6.5z"/>',
+    thumbUp: '<path d="M7 10.5V20H4.5v-9.5zM7 10.5l4-7c1.5 0 2.5 1 2.2 2.6L12.6 9.5h5.6a2 2 0 0 1 2 2.4l-1.3 6.4a2 2 0 0 1-2 1.7H7"/>',
+    thumbDown: '<path d="M7 13.5V4H4.5v9.5zM7 13.5l4 7c1.5 0 2.5-1 2.2-2.6l-.6-3.4h5.6a2 2 0 0 0 2-2.4l-1.3-6.4a2 2 0 0 0-2-1.7H7"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+    puzzle: '<path d="M9 4h3v2a1.5 1.5 0 0 0 3 0V4h3v5h-2a1.5 1.5 0 0 0 0 3h2v6h-5v-2a1.5 1.5 0 0 0-3 0v2H4v-6h2a1.5 1.5 0 0 0 0-3H4V4z"/>',
+    tag: '<path d="M3.5 12.5V4.5h8l9 9-8 8z"/><circle cx="8" cy="9" r="1.3"/>',
+    question: '<circle cx="12" cy="12" r="8.5"/><path d="M9.8 9.5a2.3 2.3 0 0 1 4.5.7c0 1.6-2.3 2-2.3 3.5M12 16.8v.2"/>'
+  };
+  const FILLED = new Set(["flame", "star", "heart", "play"]);
+  function ic(name, extra) { return '<svg class="i' + (FILLED.has(name) ? " f" : "") + (extra ? " " + extra : "") + '" viewBox="0 0 24 24" aria-hidden="true">' + P[name] + "</svg>"; }
+
+  function ring(pct, size, stroke, color, inner) {
+    const r = (size - stroke) / 2, c = 2 * Math.PI * r, off = c * (1 - Math.max(0, Math.min(1, pct)));
+    return '<div class="ring" style="width:' + size + "px;height:" + size + 'px"><svg width="' + size + '" height="' + size + '"><circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke="' + C.line + '" stroke-width="' + stroke + '"/><circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="' + stroke + '" stroke-linecap="round" stroke-dasharray="' + c + '" stroke-dashoffset="' + off + '" style="transition:stroke-dashoffset .6s"/></svg><div class="rc">' + (inner || "") + "</div></div>";
+  }
+
+  // ---------- Klang ----------
+  let AC = null;
+  function tone(freqs, dur, type, gap, vol) {
+    if (!S.sound) return;
+    try {
+      AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+      const t0 = AC.currentTime + 0.01;
+      freqs.forEach((f, i) => {
+        const o = AC.createOscillator(), g = AC.createGain(), t = t0 + i * gap;
+        o.type = type; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + dur + 0.03);
+      });
+    } catch (e) {}
+  }
+  const SND = {
+    ok: () => tone([587, 880], 0.16, "sine", 0.08, 0.13),
+    bad: () => { tone([220, 196], 0.22, "triangle", 0.12, 0.09); try { navigator.vibrate && navigator.vibrate(100); } catch (e) {} },
+    win: () => tone([523, 659, 784, 988], 0.24, "sine", 0.11, 0.12),
+    tap: () => tone([660], 0.04, "sine", 0, 0.04)
+  };
+
+  // ---------- Maskottchen „Kapsi“ (mit Schwesternhaube) ----------
+  function kapsi(size, mood) {
+    mood = mood || "happy";
+    const ink = "#16302F";
+    const mouth = mood === "sad" ? '<path d="M51 66 Q60 59 69 66" fill="none" stroke="' + ink + '" stroke-width="3.5" stroke-linecap="round"/>'
+      : mood === "wow" ? '<ellipse cx="60" cy="63" rx="6" ry="7" fill="' + ink + '"/><ellipse cx="60" cy="66" rx="3.5" ry="2.5" fill="#FF8A7D"/>'
+      : '<path d="M50 59 Q60 69 70 59" fill="' + ink + '" stroke="' + ink + '" stroke-width="3" stroke-linejoin="round"/><path d="M54 63 Q60 66 66 63" fill="#FF8A7D"/>';
+    const brow = mood === "sad" ? '<path d="M41 36 L52 40 M79 36 L68 40" stroke="' + ink + '" stroke-width="3" stroke-linecap="round"/>' : "";
+    const drop = mood === "sad" ? '<path d="M88 44 q4 7 0 10 q-4 -3 0 -10z" fill="#9ED8F0"/>' : "";
+    const ey = mood === "sad" ? 48 : 46, ex = mood === "sad" ? 0 : 2;
+    return '<svg viewBox="0 0 120 124" width="' + size + '" height="' + Math.round(size * 124 / 120) + '" aria-hidden="true"><ellipse cx="60" cy="119" rx="27" ry="4" fill="#16302F" opacity=".07"/><g transform="rotate(-18 60 66)">'
+      + '<rect x="31" y="12" width="58" height="104" rx="29" fill="#FFFDF9" stroke="#E2DACD" stroke-width="2.5"/>'
+      + '<path d="M38 76 V88 a21 21 0 0 0 13 18" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none"/>'
+      + '<path d="M31 64 V41 a29 29 0 0 1 58 0 V64 Z" fill="#0E7C7B"/><path d="M31 64 V59 H89 V64 Z" fill="#0A5F5E"/>'
+      + '<path d="M41 32 q5 -9 13 -11" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none" opacity=".35"/>'
+      + '<path d="M42 19 Q60 4 78 19 L75 26 H45 Z" fill="#fff" stroke="#E2DACD" stroke-width="2"/><rect x="58" y="11.5" width="4" height="11" rx="1" fill="#FF6B5B"/><rect x="54.5" y="15" width="11" height="4" rx="1" fill="#FF6B5B"/>'
+      + '<circle cx="47" cy="45" r="9" fill="#fff"/><circle cx="73" cy="45" r="9" fill="#fff"/>'
+      + '<circle cx="' + (47 + ex) + '" cy="' + ey + '" r="5" fill="' + ink + '"/><circle cx="' + (73 + ex) + '" cy="' + ey + '" r="5" fill="' + ink + '"/>'
+      + '<circle cx="' + (48.5 + ex) + '" cy="' + (ey - 2) + '" r="1.8" fill="#fff"/><circle cx="' + (74.5 + ex) + '" cy="' + (ey - 2) + '" r="1.8" fill="#fff"/>'
+      + brow + mouth
+      + '<circle cx="38" cy="57" r="4.2" fill="#FF8A7D" opacity=".75"/><circle cx="82" cy="57" r="4.2" fill="#FF8A7D" opacity=".75"/>'
+      + drop + "</g></svg>";
+  }
+
+  // ---------- Karteikarte ----------
+  function card(d, label) {
+    const u = UNIT_BY_ID[d.unit];
+    const li = (a) => a.map((x) => "<li>" + esc(x) + "</li>").join("");
+    return '<div class="card" style="--c:' + u.color + ";--cs:" + soft(u.color) + '">'
+      + '<div class="hd"><div class="lbl"><i></i>' + esc(label || u.title) + "</div><h2>" + esc(d.n) + '</h2><div class="brandn">z. B. ' + esc(d.b) + '</div><span class="grp">' + esc(d.g) + "</span></div>"
+      + '<div class="sec"><h5>' + ic("target") + "Wofür</h5><ul>" + li(d.u) + "</ul></div>"
+      + '<div class="sec"><h5>' + ic("bolt") + "Wirkung</h5><p>" + esc(d.w) + "</p></div>"
+      + '<div class="sec warn"><h5>' + ic("alert") + "Nebenwirkungen</h5><ul>" + li(d.nw) + "</ul></div>"
+      + '<div class="sec care"><h5>' + ic("care") + "Pflege-Tipps</h5><ul>" + li(d.p) + "</ul></div></div>";
+  }
+
+  // ---------- Hauptansichten ----------
+  let view = "lernen", openNode = null, lexQ = "", lexUnit = "all", firstRender = true;
+  const app = $("#app");
+
+  function topbar() {
+    refillHearts();
+    return '<header class="topbar"><div class="brand">' + kapsi(30) + "<span>Pillen<em>Pfad</em></span></div>"
+      + '<span class="chip-stat fire ' + (doneToday() ? "" : "off") + '" title="Tage in Folge">' + ic("flame") + "<span>" + streakNow() + "</span></span>"
+      + '<span class="chip-stat xp" title="Punkte">' + ic("star") + "<span>" + S.xp + "</span></span>"
+      + '<button class="chip-stat heart" data-act="hearts" title="Herzen">' + ic("heart") + "<span>" + S.hearts + "</span></button></header>";
+  }
+  function nav() {
+    const b = (id, icon, t) => '<button class="' + (view === id ? "on" : "") + '" data-act="nav" data-v="' + id + '">' + ic(icon) + t + "</button>";
+    return '<nav class="nav"><div class="in">' + b("lernen", "home", "Lernen") + b("lexikon", "book", "Lexikon") + b("profil", "user", "Profil") + "</div></nav>";
+  }
+  function greeting() { const h = new Date().getHours(); return h < 11 ? "Guten Morgen" : h < 17 ? "Hallo" : h < 22 ? "Guten Abend" : "Gute Nacht(schicht)"; }
+
+  function learnView() {
+    const cur = currentNode();
+    const dx = dailyXp();
+    let h = '<div class="hello"><h1>' + greeting() + " 👋</h1><p>" + (cur ? "Weiter geht's mit " + esc(UNIT_BY_ID[cur.unit].title) + "." : "Alle Stationen geschafft – stark!") + "</p></div>";
+    h += '<div class="goal">' + ring(dx / DAILY_GOAL, 64, 7, dx >= DAILY_GOAL ? C.petrol : C.coral, '<div style="font-weight:800;font-size:14px">' + Math.min(dx, DAILY_GOAL) + "</div>") + '<div class="txt"><h3>' + (dx >= DAILY_GOAL ? "Tagesziel geschafft" : "Tagesziel") + "</h3><small>" + Math.min(dx, DAILY_GOAL) + " von " + DAILY_GOAL + ' Punkten heute</small></div><button class="btn soft small" data-act="practice">' + ic("repeat") + "Training</button></div>";
+    UNITS.forEach((u, ui) => {
+      const doneN = u.nodes.filter((n) => S.done[n.id]).length;
+      h += '<section class="unit" id="u-' + u.id + '" style="--u:' + u.color + ";--us:" + soft(u.color) + '">';
+      h += '<div class="unit-card"><div class="uicon">' + u.icon + '</div><div class="ut"><div class="k">Station ' + (ui + 1) + "</div><h2>" + esc(u.title) + "</h2><p>" + esc(u.sub) + " · " + u.drugs.length + " Mittel</p></div>"
+        + '<div class="uprog">' + ring(doneN / u.nodes.length, 40, 4, u.color, '<span style="font-size:11px">' + doneN + "/" + u.nodes.length + "</span>") + "</div></div>";
+      h += '<ol class="steps">';
+      u.nodes.forEach((n, i) => {
+        const isDone = !!S.done[n.id], open = unlocked(n), isCur = cur === n;
+        const st = isCur ? "current" : isDone ? "done" : open ? "open" : "locked";
+        const dot = isDone ? ic("check") : !open ? ic("lock") : n.type === "review" ? ic("trophy") : String(i + 1);
+        const names = n.type === "review" ? "Alle " + n.drugIds.length + " Mittel gemischt" : n.drugIds.map((id) => BY_ID[id].n).join(", ");
+        const act = isCur ? (doneN ? "Weiter" : "Start") + ic("chev") : isDone ? ic("repeat") : open ? ic("chev") : "";
+        h += '<li class="step ' + st + '"><button class="srow" data-act="node" data-id="' + n.id + '"><span class="dot">' + dot + '</span><span class="st"><b>' + esc(n.title) + "</b><small>" + esc(names) + '</small></span><span class="sact">' + act + "</span></button>";
+        if (openNode === n.id) {
+          if (!open && !isDone) h += '<div class="sdetail"><p>Schließe zuerst die vorherige Lektion ab, dann geht es hier weiter.</p></div>';
+          else {
+            const label = n.type === "review" ? (isDone ? "Test wiederholen · +5" : "Test starten · +15") : isDone ? "Wiederholen · +5" : "Lektion starten · +10";
+            h += '<div class="sdetail"><div class="pills">' + n.drugIds.map((id) => "<span>" + esc(BY_ID[id].n) + "</span>").join("") + '</div><button class="btn block" data-act="start" data-id="' + n.id + '">' + ic("play") + label + "</button></div>";
+          }
+        }
+        h += "</li>";
+      });
+      h += "</ol></section>";
+    });
+    h += '<div class="note" style="margin:26px 16px 8px">Lernhilfe für Pflegekräfte – ersetzt keine Fachinformation, ärztliche Anordnung oder Rücksprache mit der Apotheke. Dosierungen sind bewusst nicht enthalten.</div>';
+    return h;
+  }
+
+  function lexView() {
+    const chips = '<div class="chips"><button class="chip ' + (lexUnit === "all" ? "on" : "") + '" data-act="lexunit" data-id="all">Alle</button>'
+      + UNITS.map((u) => '<button class="chip ' + (lexUnit === u.id ? "on" : "") + '" style="--c:' + u.color + '" data-act="lexunit" data-id="' + u.id + '">' + u.icon + " " + esc(u.title) + "</button>").join("") + "</div>";
+    return '<div class="page"><h1>Lexikon</h1><input class="search" id="lexq" type="search" placeholder="Wirkstoff, Handelsname, Gruppe …" value="' + esc(lexQ) + '" autocomplete="off">' + chips + '<div id="lexlist">' + lexList() + "</div></div>";
+  }
+  function lexList() {
+    const q = lexQ.trim().toLowerCase();
+    let h = "", total = 0;
+    UNITS.forEach((u) => {
+      if (lexUnit !== "all" && lexUnit !== u.id) return;
+      const list = u.drugs.filter((d) => !q || [d.n, d.b, d.g].concat(d.u).join(" ").toLowerCase().includes(q));
+      if (!list.length) return;
+      total += list.length;
+      h += '<div class="lex-group" style="--c:' + u.color + '"><h3><span class="d"></span>' + esc(u.title) + '</h3><div class="lex-list">';
+      list.forEach((d) => {
+        h += '<button class="drug-row" data-act="drug" data-id="' + d.id + '"><span class="t"><div>' + esc(d.n) + "</div><small>" + esc(d.g) + " · " + esc(d.b) + "</small></span>" + (S.ds[d.id] ? '<span class="ok" title="Gelernt">' + ic("star") + "</span>" : "") + '<span class="chev">' + ic("chev") + "</span></button>";
+      });
+      h += "</div></div>";
+    });
+    return total ? h : '<div class="empty">' + kapsi(90, "sad") + "<p>Nichts gefunden. Versuch es mit einem anderen Begriff.</p></div>";
+  }
+
+  function profileView() {
+    const acc = S.right + S.wrong ? Math.round((S.right / (S.right + S.wrong)) * 100) + " %" : "–";
+    const doneNodes = NODES.filter((n) => S.done[n.id]).length;
+    const box = (icon, tc, tb, v, t) => '<div class="sbox" style="--tc:' + tc + ";--tb:" + tb + '"><span class="ib">' + ic(icon) + "</span><div><b>" + v + "</b><small>" + t + "</small></div></div>";
+    return '<div class="page"><div class="hero">' + kapsi(76) + "<div><h1>Dein Fortschritt</h1><p>Jeden Tag ein bisschen – Kapsi glaubt an dich.</p></div></div>"
+      + '<div class="stats">' + box("flame", C.coral, C.coralS, streakNow(), "Tage in Folge") + box("star", C.sand, C.sandS, S.xp, "Punkte gesamt") + box("pill", C.petrol, C.petrolS, learnedCount() + "/" + ALL.length, "Mittel gelernt") + box("medal", C.plum, C.plumS, doneNodes + "/" + NODES.length, "Lektionen") + box("target", C.petrol, C.petrolS, acc, "Trefferquote") + box("heart", C.coral, C.coralS, S.hearts + "/" + MAX_HEARTS, "Herzen") + "</div>"
+      + '<div class="setting"><span>' + ic("sound") + 'Töne</span><button class="switch ' + (S.sound ? "on" : "") + '" data-act="sound" aria-label="Töne an/aus"></button></div>'
+      + '<div class="syncline"><span class="d ' + (cloud.status === "on" ? "on" : "") + '"></span>' + (cloud.status === "on" ? "Fortschritt wird in deinem Konto gespeichert" : "Fortschritt wird auf diesem Gerät gespeichert") + "</div>"
+      + '<div class="note"><b>Wichtiger Hinweis</b><br>PillenPfad ist eine Lernhilfe für Pflegekräfte. Die Inhalte sind vereinfacht und ersetzen keine Fachinformation, ärztliche Anordnung oder Rücksprache mit der Apotheke. Dosierungen sind bewusst nicht enthalten. Handelsnamen sind Beispiele.<br><br><b>Stand:</b> November 2026 – Einnahme- und Anwendungshinweise mit Fachinformationen aus der Gelben Liste abgeglichen.</div>'
+      + '<button class="btn danger block" data-act="reset">Fortschritt zurücksetzen</button></div>';
+  }
+
+  function render() {
+    const main = view === "lexikon" ? lexView() : view === "profil" ? profileView() : learnView();
+    app.innerHTML = topbar() + "<main>" + main + "</main>" + nav();
+    onScroll();
+    if (view === "lernen" && firstRender) {
+      firstRender = false;
+      const c = $(".step.current");
+      if (c && NODES.indexOf(currentNode()) > 0) setTimeout(() => c.scrollIntoView({ block: "center" }), 60);
+    }
+  }
+  function onScroll() { const t = $(".topbar"); if (t) t.classList.toggle("scrolled", window.scrollY > 4); }
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  // ---------- Dialoge ----------
+  function dialog(html, opts) {
+    closeDialog();
+    const o = document.createElement("div");
+    o.className = "overlay center"; o.id = "dlg";
+    o.innerHTML = '<div class="dialog" role="dialog" aria-modal="true">' + html + "</div>";
+    o.addEventListener("click", (e) => { if (e.target === o && !(opts && opts.sticky)) closeDialog(); });
+    document.body.appendChild(o);
+  }
+  function closeDialog() { const d = $("#dlg"); if (d) d.remove(); }
+  function sheet(html) {
+    closeDialog();
+    const o = document.createElement("div");
+    o.className = "overlay"; o.id = "dlg";
+    o.innerHTML = '<div class="sheet"><div class="grab"></div>' + html + '<div style="height:14px"></div><button class="btn ghost block" data-act="close">Schließen</button></div>';
+    o.addEventListener("click", (e) => { if (e.target === o) closeDialog(); });
+    document.body.appendChild(o);
+  }
+  function welcome() {
+    dialog(kapsi(110, "wow") + '<h3>Hallo, ich bin Kapsi!</h3><p>Mit mir lernst du die wichtigsten Medikamente in kleinen Häppchen: Gruppe, Einsatz, Wirkung, Nebenwirkungen und Pflege-Tipps.<br><br><b style="color:#16302F">Hinweis:</b> Lernhilfe für Pflegekräfte – ersetzt keine Fachinformation oder ärztliche Anordnung. Keine Dosierungen.</p><div class="row"><button class="btn block" data-act="welcome-ok">Los geht\'s</button></div>', { sticky: true });
+  }
+  function heartsRow() { let s = '<div class="hearts-big">'; for (let i = 0; i < MAX_HEARTS; i++) s += i < S.hearts ? ic("heart") : '<span class="e">' + ic("heart") + "</span>"; return s + "</div>"; }
+  function heartsDialog() {
+    refillHearts();
+    const full = S.hearts >= MAX_HEARTS;
+    dialog(heartsRow() + "<h3>" + S.hearts + " von " + MAX_HEARTS + " Herzen</h3><p>" + (full ? "Deine Herzen sind voll. Jeder Fehler in einer Lektion kostet ein Herz." : "Nächstes Herz in ca. " + nextHeartMin() + " Min. Ein Training füllt alle Herzen sofort wieder auf – dort kosten Fehler nichts.") + '</p><div class="row">' + (full ? "" : '<button class="btn block" data-act="practice">Training starten</button>') + '<button class="btn ghost block" data-act="close">OK</button></div>');
+  }
+  function noHearts() {
+    dialog(kapsi(100, "sad") + '<h3>Keine Herzen mehr</h3><p>Mach ein kurzes Training: Dort kosten Fehler nichts und danach sind alle Herzen wieder voll.</p><div class="row"><button class="btn block" data-act="practice">Training starten</button><button class="btn ghost block" data-act="close">Später</button></div>');
+  }
+
+  // ---------- Lektionen ----------
+  let L = null;
+  const KIND = { use: ["target", "Einsatzgebiet"], group: ["tag", "Gruppe"], nameByGroup: ["pill", "Wirkstoff finden"], nameByUse: ["pill", "Wirkstoff finden"], nw: ["alert", "Nebenwirkung"], pflege: ["care", "Pflege"], wirkung: ["bolt", "Wirkung"], suffix: ["search", "Endungs-Detektiv"], tf: ["question", "Stimmt das?"], match: ["puzzle", "Paare finden"] };
+  const kindTag = (k) => '<div class="qkind">' + ic(KIND[k][0]) + KIND[k][1] + "</div>";
+
+  function startNode(id) {
+    const node = NODE_BY_ID[id];
+    if (!node || (!unlocked(node) && !S.done[node.id])) return;
+    refillHearts();
+    openNode = null;
+    if (S.hearts <= 0) { render(); noHearts(); return; }
+    beginLesson({ node, mode: node.type, steps: buildLesson(node), repeat: !!S.done[node.id] });
+  }
+  function startPractice() {
+    closeDialog();
+    let seen = ALL.filter((d) => S.ds[d.id]);
+    if (seen.length < 3) { const n = currentNode() || NODES[0]; seen = n.drugIds.map((id) => BY_ID[id]); }
+    const scored = seen.map((d) => { const s = S.ds[d.id] || { r: 0, w: 0 }; return [d, (s.w + 1) / (s.r + 1) + Math.random() * 0.8]; }).sort((a, b) => b[1] - a[1]);
+    beginLesson({ node: { id: "practice", title: "Training" }, mode: "practice", steps: buildPractice(scored.slice(0, 6).map((x) => x[0]), 9), repeat: false });
+  }
+  function beginLesson(o) {
+    L = Object.assign(o, { i: 0, sel: null, phase: "answer", answered: 0, correct: 0, mistakes: 0, start: Date.now(), m: null });
+    L.steps = L.steps.filter(Boolean);
+    let el = $("#lesson");
+    if (!el) { el = document.createElement("div"); el.id = "lesson"; el.className = "lesson"; document.body.appendChild(el); }
+    document.body.style.overflow = "hidden";
+    renderLesson();
+  }
+  function endLesson() {
+    const el = $("#lesson"); if (el) el.remove();
+    document.querySelectorAll(".confetti").forEach((c) => c.remove());
+    document.body.style.overflow = "";
+    L = null; render();
+  }
+
+  function renderLesson() {
+    const el = $("#lesson"); if (!el || !L) return;
+    const st = L.steps[L.i];
+    const pct = (L.i / L.steps.length) * 100;
+    const right = L.mode === "practice" ? '<span class="chip-stat" style="color:var(--petrol)">' + ic("repeat") + "<span>Training</span></span>" : '<span class="chip-stat heart">' + ic("heart") + "<span>" + S.hearts + "</span></span>";
+    let body = "", foot = "";
+    const disabled = L.phase !== "answer" ? " disabled" : "";
+    if (st.type === "intro") {
+      const d = BY_ID[st.drugId];
+      body = '<div class="newtag">' + ic("star") + "Neue Karte</div>" + card(d, UNIT_BY_ID[d.unit].title);
+      foot = '<button class="btn block" data-act="next">Verstanden</button>';
+    } else if (st.type === "mc") {
+      body = kindTag(st.kind) + '<div class="qhead">' + kapsi(64, st.kind === "suffix" ? "wow" : "happy") + '<div class="q">' + st.prompt + '</div></div><div class="opts">'
+        + st.options.map((o, i) => '<button class="opt' + optCls(st, o) + '" data-act="opt" data-i="' + i + '"' + disabled + '><span class="k">' + "ABCD"[i] + "</span><span>" + esc(o) + "</span></button>").join("") + "</div>";
+      foot = '<button class="btn block" data-act="check"' + (L.sel === null ? " disabled" : "") + ">Prüfen</button>";
+    } else if (st.type === "tf") {
+      body = kindTag("tf") + '<div class="qhead">' + kapsi(64) + '<div class="q">' + st.prompt + '</div></div><div class="tfrow">'
+        + [true, false].map((v, i) => '<button class="opt' + optCls(st, v) + '" data-act="opt" data-i="' + i + '"' + disabled + ">" + ic(v ? "thumbUp" : "thumbDown") + (v ? "Stimmt" : "Stimmt nicht") + "</button>").join("") + "</div>";
+      foot = '<button class="btn block" data-act="check"' + (L.sel === null ? " disabled" : "") + ">Prüfen</button>";
+    } else if (st.type === "match") {
+      if (!L.m) L.m = { left: null, right: null, done: new Set(), rightOrder: shuffle(st.pairs.map((_, i) => i)), errors: 0 };
+      const m = L.m;
+      body = kindTag("match") + '<div class="qtitle">Wirkstoff ↔ ' + esc(st.label) + '</div><div class="match"><div class="col">'
+        + st.pairs.map((p, i) => '<button class="mt' + (m.done.has(i) ? " gone" : m.left === i ? " sel" : "") + '" data-act="ml" data-i="' + i + '">' + esc(p[0]) + "</button>").join("")
+        + '</div><div class="col">' + m.rightOrder.map((i) => '<button class="mt' + (m.done.has(i) ? " gone" : m.right === i ? " sel" : "") + '" data-act="mr" data-i="' + i + '">' + esc(st.pairs[i][1]) + "</button>").join("") + "</div></div>";
+      foot = '<button class="btn block" disabled>Tippe zusammengehörige Paare an</button>';
+    }
+    let footHtml = '<div class="lfoot"><div class="in">' + foot + "</div></div>";
+    if (L.phase === "feedback") {
+      const ok = L.lastOk;
+      footHtml = '<div class="feedback ' + (ok ? "ok" : "bad") + '"><div class="in"><div class="fh"><span class="badge">' + ic(ok ? "check" : "x") + "</span><h3>" + (ok ? pick(["Richtig!", "Genau so!", "Sehr gut!", "Stark!"]) : "Nicht ganz") + "</h3></div><p>" + (L.fbText || "") + '</p><button class="btn block ' + (ok ? "" : "coral") + '" data-act="next">Weiter</button></div></div>';
+    }
+    el.innerHTML = '<div class="lt"><button class="x" data-act="quit" aria-label="Lektion beenden">' + ic("x") + '</button><div class="pbar"><i style="width:' + pct + '%"></i></div>' + right + '</div><div class="lbody">' + body + "</div>" + footHtml;
+    const lb = $(".lbody", el); if (lb && L.phase === "answer" && !L.keepScroll) lb.scrollTop = 0;
+    L.keepScroll = false;
+  }
+  function optCls(st, val) {
+    const idx = st.type === "tf" ? [true, false].indexOf(val) : st.options.indexOf(val);
+    if (L.phase === "feedback") {
+      if (val === st.answer) return " right";
+      if (idx === L.sel) return " wrong";
+      return " dim";
+    }
+    return idx === L.sel ? " sel" : "";
+  }
+  function record(drugId, ok) {
+    const s = S.ds[drugId] || (S.ds[drugId] = { r: 0, w: 0 });
+    if (ok) { s.r++; S.right++; } else { s.w++; S.wrong++; }
+  }
+  function stripB(s) { return String(s || "").replace(/<[^>]+>/g, ""); }
+  function check() {
+    const st = L.steps[L.i];
+    if (L.sel === null || L.phase !== "answer") return;
+    const val = st.type === "tf" ? [true, false][L.sel] : st.options[L.sel];
+    const ok = val === st.answer;
+    L.answered++;
+    record(st.drugId, ok);
+    if (ok) { L.correct++; SND.ok(); L.fbText = esc(stripB(st.explain)); }
+    else {
+      L.mistakes++; SND.bad();
+      if (L.mode !== "practice") S.hearts = Math.max(0, S.hearts - 1);
+      L.fbText = "Richtig ist: <b>" + esc(st.type === "tf" ? (st.answer ? "Stimmt" : "Stimmt nicht") : st.answer) + "</b><br>" + esc(stripB(st.explain));
+      if (!st.retried) L.steps.push(Object.assign({}, st, { retried: true }));
+    }
+    L.lastOk = ok; L.phase = "feedback"; L.keepScroll = true;
+    renderLesson();
+  }
+  function next() {
+    if (L.phase === "feedback" && !L.lastOk && L.mode !== "practice" && S.hearts <= 0) { save(); endLesson(); noHearts(); return; }
+    const st = L.steps[L.i];
+    if (st && st.type === "intro") { const s = S.ds[st.drugId] || (S.ds[st.drugId] = { r: 0, w: 0 }); s.seen = 1; }
+    L.i++; L.sel = null; L.phase = "answer"; L.m = null;
+    if (L.i >= L.steps.length) { finish(); return; }
+    renderLesson();
+  }
+  function matchTap(side, i) {
+    const st = L.steps[L.i], m = L.m;
+    if (m.done.has(i)) return;
+    SND.tap();
+    if (side === "l") m.left = m.left === i ? null : i; else m.right = m.right === i ? null : i;
+    if (m.left !== null && m.right !== null) {
+      if (m.left === m.right) {
+        m.done.add(m.left); m.left = m.right = null; SND.ok();
+        if (m.done.size === st.pairs.length) {
+          L.answered++; const ok = m.errors === 0; if (ok) L.correct++;
+          st.drugIds.forEach((id) => record(id, ok));
+          L.lastOk = true; L.fbText = m.errors ? "Alle Paare gefunden (" + m.errors + " Fehlversuch" + (m.errors > 1 ? "e" : "") + ")." : "Alle Paare auf Anhieb richtig!";
+          L.phase = "feedback"; renderLesson(); return;
+        }
+        renderLesson();
+      } else {
+        m.errors++; SND.bad();
+        const l = m.left, r = m.right; m.left = m.right = null;
+        renderLesson();
+        const el = $("#lesson");
+        [el.querySelector('[data-act="ml"][data-i="' + l + '"]'), el.querySelector('[data-act="mr"][data-i="' + r + '"]')].forEach((x) => x && x.classList.add("bad"));
+      }
+    } else renderLesson();
+  }
+  function finish() {
+    const first = !L.repeat;
+    let xp = L.mode === "practice" ? 10 : L.mode === "review" ? (first ? 15 : 5) : first ? 10 : 5;
+    const perfect = L.mistakes === 0;
+    if (perfect && L.mode !== "practice") xp += 5;
+    const today = dayKey();
+    const before = streakNow();
+    if (S.lastDay !== today) { S.streak = S.lastDay === yesterdayKey() ? S.streak + 1 : 1; S.lastDay = today; }
+    if (S.daily.day !== today) S.daily = { day: today, xp: 0 };
+    S.daily.xp += xp; S.xp += xp; S.lessons++;
+    if (L.node.id !== "practice") S.done[L.node.id] = (S.done[L.node.id] || 0) + 1;
+    if (L.mode === "practice") { S.hearts = MAX_HEARTS; S.heartTs = Date.now(); }
+    save();
+    SND.win();
+    const acc = L.answered ? Math.round((L.correct / L.answered) * 100) : 100;
+    const secs = Math.round((Date.now() - L.start) / 1000);
+    const time = Math.floor(secs / 60) + ":" + String(secs % 60).padStart(2, "0");
+    const streakUp = S.streak > before;
+    const tile = (icon, tc, tb, v, t) => '<div class="tile" style="--tc:' + tc + ";--tb:" + tb + '"><div class="ti">' + ic(icon) + '</div><div class="tv">' + v + '</div><div class="th">' + t + "</div></div>";
+    const title = L.mode === "practice" ? "Training geschafft!" : perfect ? "Fehlerfrei!" : L.mode === "review" ? "Station gemeistert!" : "Lektion geschafft!";
+    $("#lesson").innerHTML = '<div class="lbody"><div class="result">' + kapsi(140, "wow") + "<h2>" + title + "</h2><p>" + (streakUp ? "🔥 " + S.streak + (S.streak === 1 ? " Tag" : " Tage") + " in Folge!" : L.mode === "practice" ? "Deine Herzen sind wieder voll." : "Kapsi ist stolz auf dich.") + '</p><div class="tiles">' + tile("star", C.sand, C.sandS, "+" + xp, "Punkte") + tile("target", C.petrol, C.petrolS, acc + " %", "Treffer") + tile("clock", C.plum, C.plumS, time, "Zeit") + '</div></div></div><div class="lfoot"><div class="in"><button class="btn block" data-act="done">Weiter</button></div></div>';
+    confetti();
+    L.phase = "result";
+  }
+  function confetti() {
+    const c = document.createElement("div"); c.className = "confetti";
+    const cols = ["#0E7C7B", "#FF6B5B", "#E9A93A", "#16A39F", "#FFB4A9", "#7E62C4"];
+    for (let i = 0; i < 60; i++) {
+      const p = document.createElement("i");
+      p.style.left = Math.random() * 100 + "%"; p.style.background = cols[i % cols.length];
+      p.style.animationDuration = 1.8 + Math.random() * 1.6 + "s"; p.style.animationDelay = Math.random() * 0.5 + "s";
+      if (i % 3 === 0) { p.style.width = "10px"; p.style.height = "10px"; p.style.borderRadius = "50%"; }
+      c.appendChild(p);
+    }
+    document.body.appendChild(c); setTimeout(() => c.remove(), 4200);
+  }
+  function quitLesson() {
+    if (!L || L.phase === "result") { endLesson(); return; }
+    dialog(kapsi(90, "sad") + '<h3>Wirklich aufhören?</h3><p>Dein Fortschritt in dieser Lektion geht verloren.</p><div class="row"><button class="btn block" data-act="close">Weiterlernen</button><button class="btn danger block" data-act="quit-yes">Beenden</button></div>');
+  }
+
+  // ---------- Ereignisse ----------
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-act]");
+    if (!t) return;
+    const a = t.dataset.act, id = t.dataset.id;
+    switch (a) {
+      case "nav": view = t.dataset.v; openNode = null; location.hash = view; render(); window.scrollTo(0, 0); break;
+      case "node": openNode = openNode === id ? null : id; render(); break;
+      case "start": startNode(id); break;
+      case "practice": closeDialog(); startPractice(); break;
+      case "hearts": heartsDialog(); break;
+      case "drug": sheet(card(BY_ID[id])); break;
+      case "lexunit": lexUnit = id; render(); break;
+      case "close": closeDialog(); break;
+      case "welcome-ok": S.disc = true; save(); closeDialog(); SND.tap(); break;
+      case "sound": S.sound = !S.sound; save(); render(); break;
+      case "reset": dialog(kapsi(90, "sad") + '<h3>Alles zurücksetzen?</h3><p>Punkte, Serie und alle Lektionen werden gelöscht.</p><div class="row"><button class="btn coral block" data-act="reset-yes">Zurücksetzen</button><button class="btn ghost block" data-act="close">Abbrechen</button></div>'); break;
+      case "reset-yes": { const snd = S.sound; S = DEFAULT(); S.sound = snd; S.disc = true; save(); closeDialog(); render(); break; }
+      case "opt": if (L && L.phase === "answer") { L.sel = +t.dataset.i; L.keepScroll = true; SND.tap(); renderLesson(); } break;
+      case "check": check(); break;
+      case "next": next(); break;
+      case "ml": matchTap("l", +t.dataset.i); break;
+      case "mr": matchTap("r", +t.dataset.i); break;
+      case "quit": quitLesson(); break;
+      case "quit-yes": closeDialog(); save(); endLesson(); break;
+      case "done": endLesson(); break;
+    }
+  });
+  document.addEventListener("input", (e) => {
+    if (e.target.id === "lexq") { lexQ = e.target.value; const l = $("#lexlist"); if (l) l.innerHTML = lexList(); }
+  });
+  document.addEventListener("keydown", (e) => {
+    if (!L || $("#dlg")) return;
+    const st = L.steps[L.i];
+    if (L.phase === "answer" && st && (st.type === "mc" || st.type === "tf")) {
+      const max = st.type === "tf" ? 2 : st.options.length;
+      let n = parseInt(e.key, 10);
+      if (isNaN(n)) { const k = "abcd".indexOf(e.key.toLowerCase()); if (k >= 0) n = k + 1; }
+      if (n >= 1 && n <= max) { L.sel = n - 1; L.keepScroll = true; renderLesson(); return; }
+    }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (L.phase === "result") endLesson();
+      else if (L.phase === "feedback" || (st && st.type === "intro")) next();
+      else check();
+    }
+  });
+  window.addEventListener("hashchange", () => {
+    const h = location.hash.slice(1);
+    if (["lernen", "lexikon", "profil"].includes(h) && h !== view && !L) { view = h; render(); }
+  });
+  setInterval(() => { if (!L && !$("#dlg") && S.hearts < MAX_HEARTS) { const h = S.hearts; refillHearts(); if (S.hearts !== h) { save(); render(); } } }, 30000);
+
+  // ---------- Start ----------
+  const h0 = location.hash.slice(1);
+  if (["lernen", "lexikon", "profil"].includes(h0)) view = h0;
+  refillHearts();
+  render();
+  if (!S.disc) welcome();
+  initCloud();
+})();
+
+</script>
+</body>
+</html>
